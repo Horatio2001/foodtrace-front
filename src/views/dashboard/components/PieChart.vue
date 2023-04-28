@@ -1,0 +1,108 @@
+<template>
+  <div :class="className" :style="{height:height,width:width}" />
+</template>
+
+<script>
+import echarts from 'echarts'
+require('echarts/theme/macarons') // echarts theme
+import resize from './mixins/resize'
+import { getTxByOrg } from '@/api/block'
+import da from 'element-ui/src/locale/lang/da'
+export default {
+  mixins: [resize],
+  props: {
+    className: {
+      type: String,
+      default: 'chart'
+    },
+    width: {
+      type: String,
+      default: '100%'
+    },
+    height: {
+      type: String,
+      default: '300px'
+    }
+  },
+  data() {
+    return {
+      list:[
+        {
+        name: null,
+        transactions: null
+      },{
+        name: null,
+        transactions: null
+      },{
+        name: null,
+        transactions: null
+      },{
+        name: null,
+        transactions: null
+      }
+      ],
+      chart: null
+    }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.initChart()
+    })
+  },
+  beforeDestroy() {
+    if (!this.chart) {
+      return
+    }
+    this.chart.dispose()
+    this.chart = null
+  },
+  created() {
+    this.fetchData();
+  },
+  methods: {
+    initChart() {
+      this.chart = echarts.init(this.$el, 'macarons')
+      this.chart.setOption({
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          left: 'center',
+          bottom: '10',
+          data: ['org0-foodtrace-com', 'foodtrace-com', 'org1-foodtrace-com', 'org2-foodtrace-com']
+        },
+        series: [
+          {
+            name: 'Transactions by Organization',
+            type: 'pie',
+            roseType: 'radius',
+            radius: [15, 95],
+            center: ['50%', '38%'],
+            data: [
+              { value: 147, name: 'org0-foodtrace-com' },
+              { value: 4, name: 'foodtrace-com' },
+              { value: 20, name: 'org1-foodtrace-com' },
+              { value: 20, name: 'org2-foodtrace-com' }
+            ],
+            animationEasing: 'cubicInOut',
+            animationDuration: 2600
+          }
+        ]
+      })
+    },
+    fetchData() {
+      getTxByOrg().then(response => {
+        // console.log(data)
+        const data = response.data.map(obj => ({
+          transactions: obj.transactions,
+          name: obj.name
+        }))
+        // console.log(data)
+        this.list = data
+        // console.log(this.list)
+      })
+    }
+  }
+}
+</script>
