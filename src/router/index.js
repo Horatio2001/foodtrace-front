@@ -51,7 +51,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '首页', icon: 'dashboard' },
+      meta: { title: '首页', icon: 'dashboard' , affix:true}
     }]
   },
 
@@ -63,7 +63,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Network',
         component: () => import('@/views/network/index'),
-        meta: { title: '网络信息', icon: 'network' }
+        meta: { title: '网络信息', icon: 'network' , affix:true}
       }
     ]
   },
@@ -76,7 +76,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Blocks',
         component: () => import('@/views/blocks/index'),
-        meta: { title: '区块信息', icon: 'blocks' }
+        meta: { title: '区块信息', icon: 'blocks' , affix:true}
       }
     ]
   },
@@ -89,7 +89,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Transactions',
         component: () => import('@/views/transactions/index'),
-        meta: { title: '交易信息', icon: 'transactions' }
+        meta: { title: '交易信息', icon: 'transactions' , affix:true}
       }
     ]
   },
@@ -101,7 +101,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Chaincodes',
         component: () => import('@/views/chaincodes/index'),
-        meta: { title: '链码信息', icon: 'chaincodes' }
+        meta: { title: '链码信息', icon: 'chaincodes' , affix:true}
       }
     ]
   },
@@ -119,135 +119,41 @@ export const constantRoutes = [
         path: 'allInfo',
         component: () => import('@/views/resource/allInfo/index'), // Parent router-view
         name: 'AllInfo',
-        meta: { title: '全部资源' }
+        meta: { title: '全部资源' , affix:true}
       },
       {
         path: 'collectInfo',
         component: () => import('@/views/resource/collectInfo/index'),
         name: 'CollectInfo',
-        meta: { title: '收集信息列表' }
+        meta: { title: '收集信息列表' , affix:true}
       },
       {
         path: 'saveInfo',
         component: () => import('@/views/resource/saveInfo/index'),
         name: 'SaveInfo',
-        meta: { title: '资源保存列表' }
+        meta: { title: '资源保存列表' , affix:true}
       },
       {
         path: 'enterInfo',
         component: () => import('@/views/resource/enterInfo/index'),
         name: 'EnterInfo',
-        meta: { title: '资源录入列表' }
+        meta: { title: '资源录入列表' , affix:true}
       },
       {
         path: 'shareInfo',
         component: () => import('@/views/resource/shareInfo/index'),
         name: 'ShareInfo',
-        meta: { title: '资源共享列表' }
+        meta: { title: '资源共享列表' , affix:true}
       }
     ]
   },
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
-
   {
     path: 'external-link',
     component: Layout,
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        path: 'https://github.com/Horatio2001',
+        meta: { title: 'External Link', icon: 'link' , affix:true}
       }
     ]
   },

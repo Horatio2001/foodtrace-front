@@ -122,7 +122,10 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
-    }
+    },
+    rowClassName({ row ,rowIndex}) {
+      return rowIndex % 2 === 0 ? 'even-row' : '';
+    },
   },
   watch: {
     checkboxVal(valArr) {
@@ -133,3 +136,9 @@ export default {
 }
 </script>
 
+<style>
+
+.even-row {
+  background-color: #f5f5f5;
+}
+</style>

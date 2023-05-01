@@ -97,7 +97,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      fetchBlockByPage(this.listQuery.page).then(response => {
+      fetchBlockByPage(this.listQuery.page, this.listQuery.limit).then(response => {
         this.list = response.data
         setTimeout(() => {
           this.listLoading = false

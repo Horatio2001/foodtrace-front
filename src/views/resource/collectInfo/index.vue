@@ -1,379 +1,1062 @@
-<!--<template>-->
-<!--  <div class="app-container">-->
-<!--    <div class="filter-container">-->
-<!--      <el-input v-model="listQuery.title" placeholder="Title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />-->
-<!--      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">-->
-<!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
-<!--      </el-select>-->
-<!--      <el-select v-model="listQuery.type" placeholder="Type" clearable class="filter-item" style="width: 130px">-->
-<!--        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />-->
-<!--      </el-select>-->
-<!--      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">-->
-<!--        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />-->
-<!--      </el-select>-->
-<!--      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">-->
-<!--        Search-->
-<!--      </el-button>-->
-<!--      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">-->
-<!--        Add-->
-<!--      </el-button>-->
-<!--      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">-->
-<!--        Export-->
-<!--      </el-button>-->
-<!--      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">-->
-<!--        reviewer-->
-<!--      </el-checkbox>-->
-<!--    </div>-->
+<template>
+  <div class="app-container">
+    <div class="filter-container">
+      <el-input v-model="listQuery.title" placeholder="Title" style="width: 200px;" class="filter-item"
+                @keyup.enter.native="handleFilter"
+      />
+      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">
+        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
+      </el-select>
+      <el-select v-model="listQuery.type" placeholder="Type" clearable class="filter-item" style="width: 130px">
+        <el-option v-for="item in fruitTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'"
+                   :value="item.key"
+        />
+      </el-select>
+      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+      </el-select>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+        搜索
+      </el-button>
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
+                 @click="handleCreateCollectionInfo"
+      >
+        新增
+      </el-button>
+      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download"
+                 @click="handleDownload"
+      >
+        下载
+      </el-button>
+      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+        reviewer
+      </el-checkbox>
+    </div>
 
-<!--    <el-table-->
-<!--      :key="tableKey"-->
-<!--      v-loading="listLoading"-->
-<!--      :data="list"-->
-<!--      border-->
-<!--      fit-->
-<!--      highlight-current-row-->
-<!--      style="width: 100%;"-->
-<!--      @sort-change="sortChange"-->
-<!--    >-->
-<!--      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span>{{ row.id }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Date" width="150px" align="center">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Title" min-width="150px">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>-->
-<!--          <el-tag>{{ row.type | typeFilter }}</el-tag>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Author" width="110px" align="center">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span>{{ row.author }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span style="color:red;">{{ row.reviewer }}</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Imp" width="80px">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Readings" align="center" width="95">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>-->
-<!--          <span v-else>0</span>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Status" class-name="status-col" width="100">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <el-tag :type="row.status | statusFilter">-->
-<!--            {{ row.status }}-->
-<!--          </el-tag>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">-->
-<!--        <template slot-scope="{row,$index}">-->
-<!--          <el-button type="primary" size="mini" @click="handleUpdate(row)">-->
-<!--            Edit-->
-<!--          </el-button>-->
-<!--          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">-->
-<!--            Publish-->
-<!--          </el-button>-->
-<!--          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">-->
-<!--            Draft-->
-<!--          </el-button>-->
-<!--          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">-->
-<!--            Delete-->
-<!--          </el-button>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
-<!--    </el-table>-->
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%;"
+      @sort-change="sortChange"
+    >
+      <el-table-column label="收集号" prop="collectID" sortable="custom" align="center" width="80"
+                       :class-name="getSortClass('collectID')"
+      >
+        <template slot-scope="{row}">
+          <span>{{ row.collectID }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="流程状态" prop="status" class-name="status-col" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.status | statusFilter">
+            <span v-if="row.status === 0">待保存</span>
+            <span v-else-if="row.status === 1">待录入</span>
+            <span v-else-if="row.status === 2">待共享</span>
+            <span v-else-if="row.status === 3">已共享</span>
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="作物类别" prop="type" align="center" width="110">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.type | fruitTypeFilter }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="作物名称" prop="name" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.name }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="种质名称" prop="germplasmName" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.germplasmName }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="科名" prop="sectionName" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.sectionName }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="属名" prop="genericName" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.genericName }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="学名" prop="scientificName" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.scientificName }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="种质资源类型" prop="resourceType" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.resourceType | resourceTypeFilter }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="收集方式" prop="collectMethod" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.collectMethod | collectMethodFilter }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="收集人" prop="collectPeople" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.collectPeople }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="收集单位" prop="collectUnit" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.collectUnit }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="原生境图片" prop="image" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.image }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="项目归口" prop="speciesName" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            {{ row.speciesName }}
+          </span>
+        </template>
+      </el-table-column>
 
-<!--    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />-->
+      <el-table-column label="操作状态" prop="idContradict" class-name="status-col" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.isContradict | contadictFilter">
+            <span v-if="row.isLoaded === 1">已上链</span>
+            <span v-else-if="row.isContradict === 0">正常</span>
+            <span v-else-if="row.isContradict === 1">反驳中</span>
+          </el-tag>
+        </template>
+      </el-table-column>
 
-<!--    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">-->
-<!--      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">-->
-<!--        <el-form-item label="Type" prop="type">-->
-<!--          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">-->
-<!--            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Date" prop="timestamp">-->
-<!--          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Title" prop="title">-->
-<!--          <el-input v-model="temp.title" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Status">-->
-<!--          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">-->
-<!--            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />-->
-<!--          </el-select>-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Imp">-->
-<!--          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />-->
-<!--        </el-form-item>-->
-<!--        <el-form-item label="Remark">-->
-<!--          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />-->
-<!--        </el-form-item>-->
-<!--      </el-form>-->
-<!--      <div slot="footer" class="dialog-footer">-->
-<!--        <el-button @click="dialogFormVisible = false">-->
-<!--          Cancel-->
-<!--        </el-button>-->
-<!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
-<!--          Confirm-->
-<!--        </el-button>-->
-<!--      </div>-->
-<!--    </el-dialog>-->
+      <el-table-column label="操作员" prop="type" sortable="custom" align="center" width="80">
+        <template slot-scope="{row}">
+          <span>
+            admin
+          </span>
+        </template>
+      </el-table-column>
 
-<!--    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">-->
-<!--      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">-->
-<!--        <el-table-column prop="key" label="Channel" />-->
-<!--        <el-table-column prop="pv" label="Pv" />-->
-<!--      </el-table>-->
-<!--      <span slot="footer" class="dialog-footer">-->
-<!--        <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>-->
-<!--      </span>-->
-<!--    </el-dialog>-->
-<!--  </div>-->
-<!--</template>-->
+      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
+        <template slot-scope="{row}">
+          <div class="buttons-row">
+            <el-button type="primary" size="small" @click="viewDetails(row.collectID)">
+              查看详情
+            </el-button>
+            <el-button v-if="row.isLoaded === 0 && row.status === 0" type="primary" size="small" @click="handleUpdate(row)">
+              修改
+            </el-button>
+            <el-button v-if="row.isLoaded === 0" type="primary" size="small" @click="handleDelete(row)">
+              删除
+            </el-button>
+          </div>
+          <div class="buttons-row">
+            <el-button v-if="row.isLoaded === 0 && row.status === 0 && row.isContradict === 0" type="primary"
+                       size="small" @click="handleRefuse(row.collectID)"
+            >
+              反驳
+            </el-button>
+            <el-button v-if="row.isLoaded === 0 && row.status === 0 && row.isContradict === 0" type="primary"
+                       size="small" @click="save"
+            >
+              保存
+            </el-button>
+          </div>
+        </template>
+      </el-table-column>
 
-<!--<script>-->
-<!--import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'-->
-<!--import waves from '@/directive/waves' // waves directive-->
-<!--import { parseTime } from '@/utils'-->
-<!--import Pagination from '@/components/Pagination' // secondary package based on el-pagination-->
+    </el-table>
 
-<!--const calendarTypeOptions = [-->
-<!--  { key: 'CN', display_name: 'China' },-->
-<!--  { key: 'US', display_name: 'USA' },-->
-<!--  { key: 'JP', display_name: 'Japan' },-->
-<!--  { key: 'EU', display_name: 'Eurozone' }-->
-<!--]-->
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
+                @pagination="getList"
+    />
 
-<!--// arr to obj, such as { CN : "China", US : "USA" }-->
-<!--const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {-->
-<!--  acc[cur.key] = cur.display_name-->
-<!--  return acc-->
-<!--}, {})-->
+    <el-dialog :visible.sync="dialogCollectionVisible" title="收集信息详情" :close-on-click-modal="false"
+               :show-close="false"
+               class="collection-dialog"
+    >
+      <div class="detail-table">
+        <div class="detail-row">
+          <div class="detail-label">收集号:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectID }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">作物类别:</div>
+          <div class="detail-value">{{ this.collectionInfo.type | fruitTypeFilter }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">作物名称:</div>
+          <div class="detail-value">{{ this.collectionInfo.name }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">种质名称:</div>
+          <div class="detail-value">{{ this.collectionInfo.germplasmName }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">种质外文名称:</div>
+          <div class="detail-value">{{ this.collectionInfo.germplasmNameEn }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">科名:</div>
+          <div class="detail-value">{{ this.collectionInfo.sectionName }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">属名:</div>
+          <div class="detail-value">{{ this.collectionInfo.genericName }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">学名:</div>
+          <div class="detail-value">{{ this.collectionInfo.scientificName }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">种质资源类型:</div>
+          <div class="detail-value">{{ this.collectionInfo.resourceType | resourceTypeFilter }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">收集方式:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectMethod | collectMethodFilter }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">种质来源:</div>
+          <div class="detail-value">{{ this.collectionInfo.germplasmSource }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">来源国:</div>
+          <div class="detail-value">{{ this.collectionInfo.sourceCountry }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">来源省(州、邦):</div>
+          <div class="detail-value">{{ this.collectionInfo.sourceProvince }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">来源地:</div>
+          <div class="detail-value">{{ this.collectionInfo.source }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">来源机构:</div>
+          <div class="detail-value">{{ this.collectionInfo.sourceOrg }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">原产国:</div>
+          <div class="detail-value">{{ this.collectionInfo.originCountry }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">收集地经度:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectPlaceLongitude }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">收集地纬度:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectPlaceLatitude }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">收集地海拔:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectPlaceAltitude }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">收集地土壤类型:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectPlaceSoilType | soilTypeFilter }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">收集地生态类型:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectPlaceEcologyType | collectPlaceEcologyFilter }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">收集材料类型:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectMaterialType | collectMaterialTypeFilter }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">收集人:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectPeople }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">收集单位:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectUnit }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">收集时间:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectTime }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">原生境图片:</div>
+          <div class="detail-value">{{ this.collectionInfo.image }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">项目归口:</div>
+          <div class="detail-value">{{ this.collectionInfo.speciesName }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">操作员:</div>
+          <div class="detail-value">admin</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">备注:</div>
+          <div class="detail-value">{{ this.collectionInfo.collectRemark }}</div>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogCollectionVisible = false" type="primary">关闭</el-button>
+      </span>
+    </el-dialog>
 
-<!--export default {-->
-<!--  name: 'ComplexTable',-->
-<!--  components: { Pagination },-->
-<!--  directives: { waves },-->
-<!--  filters: {-->
-<!--    statusFilter(status) {-->
-<!--      const statusMap = {-->
-<!--        published: 'success',-->
-<!--        draft: 'info',-->
-<!--        deleted: 'danger'-->
-<!--      }-->
-<!--      return statusMap[status]-->
-<!--    },-->
-<!--    typeFilter(type) {-->
-<!--      return calendarTypeKeyValue[type]-->
-<!--    }-->
-<!--  },-->
-<!--  data() {-->
-<!--    return {-->
-<!--      tableKey: 0,-->
-<!--      list: null,-->
-<!--      total: 0,-->
-<!--      listLoading: true,-->
-<!--      listQuery: {-->
-<!--        page: 1,-->
-<!--        limit: 20,-->
-<!--        importance: undefined,-->
-<!--        title: undefined,-->
-<!--        type: undefined,-->
-<!--        sort: '+id'-->
-<!--      },-->
-<!--      importanceOptions: [1, 2, 3],-->
-<!--      calendarTypeOptions,-->
-<!--      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],-->
-<!--      statusOptions: ['published', 'draft', 'deleted'],-->
-<!--      showReviewer: false,-->
-<!--      temp: {-->
-<!--        id: undefined,-->
-<!--        importance: 1,-->
-<!--        remark: '',-->
-<!--        timestamp: new Date(),-->
-<!--        title: '',-->
-<!--        type: '',-->
-<!--        status: 'published'-->
-<!--      },-->
-<!--      dialogFormVisible: false,-->
-<!--      dialogStatus: '',-->
-<!--      textMap: {-->
-<!--        update: 'Edit',-->
-<!--        create: 'Create'-->
-<!--      },-->
-<!--      dialogPvVisible: false,-->
-<!--      pvData: [],-->
-<!--      rules: {-->
-<!--        type: [{ required: true, message: 'type is required', trigger: 'change' }],-->
-<!--        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],-->
-<!--        title: [{ required: true, message: 'title is required', trigger: 'blur' }]-->
-<!--      },-->
-<!--      downloadLoading: false-->
-<!--    }-->
-<!--  },-->
-<!--  created() {-->
-<!--    this.getList()-->
-<!--  },-->
-<!--  methods: {-->
-<!--    getList() {-->
-<!--      this.listLoading = true-->
-<!--      fetchList(this.listQuery).then(response => {-->
-<!--        this.list = response.data.items-->
-<!--        this.total = response.data.total-->
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogCreateVisible">
+      <el-form ref="dataForm" :rules="rules" :model="collectionTemp" label-position="left" label-width="130px"
+               style="width: auto; margin-left:50px;"
+      >
 
-<!--        // Just to simulate the time of the request-->
-<!--        setTimeout(() => {-->
-<!--          this.listLoading = false-->
-<!--        }, 1.5 * 1000)-->
-<!--      })-->
-<!--    },-->
-<!--    handleFilter() {-->
-<!--      this.listQuery.page = 1-->
-<!--      this.getList()-->
-<!--    },-->
-<!--    handleModifyStatus(row, status) {-->
-<!--      this.$message({-->
-<!--        message: '操作Success',-->
-<!--        type: 'success'-->
-<!--      })-->
-<!--      row.status = status-->
-<!--    },-->
-<!--    sortChange(data) {-->
-<!--      const { prop, order } = data-->
-<!--      if (prop === 'id') {-->
-<!--        this.sortByID(order)-->
-<!--      }-->
-<!--    },-->
-<!--    sortByID(order) {-->
-<!--      if (order === 'ascending') {-->
-<!--        this.listQuery.sort = '+id'-->
-<!--      } else {-->
-<!--        this.listQuery.sort = '-id'-->
-<!--      }-->
-<!--      this.handleFilter()-->
-<!--    },-->
-<!--    resetTemp() {-->
-<!--      this.temp = {-->
-<!--        id: undefined,-->
-<!--        importance: 1,-->
-<!--        remark: '',-->
-<!--        timestamp: new Date(),-->
-<!--        title: '',-->
-<!--        status: 'published',-->
-<!--        type: ''-->
-<!--      }-->
-<!--    },-->
-<!--    handleCreate() {-->
-<!--      this.resetTemp()-->
-<!--      this.dialogStatus = 'create'-->
-<!--      this.dialogFormVisible = true-->
-<!--      this.$nextTick(() => {-->
-<!--        this.$refs['dataForm'].clearValidate()-->
-<!--      })-->
-<!--    },-->
-<!--    createData() {-->
-<!--      this.$refs['dataForm'].validate((valid) => {-->
-<!--        if (valid) {-->
-<!--          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id-->
-<!--          this.temp.author = 'vue-element-admin'-->
-<!--          createArticle(this.temp).then(() => {-->
-<!--            this.list.unshift(this.temp)-->
-<!--            this.dialogFormVisible = false-->
-<!--            this.$notify({-->
-<!--              title: 'Success',-->
-<!--              message: 'Created Successfully',-->
-<!--              type: 'success',-->
-<!--              duration: 2000-->
-<!--            })-->
-<!--          })-->
-<!--        }-->
-<!--      })-->
-<!--    },-->
-<!--    handleUpdate(row) {-->
-<!--      this.temp = Object.assign({}, row) // copy obj-->
-<!--      this.temp.timestamp = new Date(this.temp.timestamp)-->
-<!--      this.dialogStatus = 'update'-->
-<!--      this.dialogFormVisible = true-->
-<!--      this.$nextTick(() => {-->
-<!--        this.$refs['dataForm'].clearValidate()-->
-<!--      })-->
-<!--    },-->
-<!--    updateData() {-->
-<!--      this.$refs['dataForm'].validate((valid) => {-->
-<!--        if (valid) {-->
-<!--          const tempData = Object.assign({}, this.temp)-->
-<!--          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464-->
-<!--          updateArticle(tempData).then(() => {-->
-<!--            const index = this.list.findIndex(v => v.id === this.temp.id)-->
-<!--            this.list.splice(index, 1, this.temp)-->
-<!--            this.dialogFormVisible = false-->
-<!--            this.$notify({-->
-<!--              title: 'Success',-->
-<!--              message: 'Update Successfully',-->
-<!--              type: 'success',-->
-<!--              duration: 2000-->
-<!--            })-->
-<!--          })-->
-<!--        }-->
-<!--      })-->
-<!--    },-->
-<!--    handleDelete(row, index) {-->
-<!--      this.$notify({-->
-<!--        title: 'Success',-->
-<!--        message: 'Delete Successfully',-->
-<!--        type: 'success',-->
-<!--        duration: 2000-->
-<!--      })-->
-<!--      this.list.splice(index, 1)-->
-<!--    },-->
-<!--    handleFetchPv(pv) {-->
-<!--      fetchPv(pv).then(response => {-->
-<!--        this.pvData = response.data.pvData-->
-<!--        this.dialogPvVisible = true-->
-<!--      })-->
-<!--    },-->
-<!--    handleDownload() {-->
-<!--      this.downloadLoading = true-->
-<!--      import('@/vendor/Export2Excel').then(excel => {-->
-<!--        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']-->
-<!--        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']-->
-<!--        const data = this.formatJson(filterVal)-->
-<!--        excel.export_json_to_excel({-->
-<!--          header: tHeader,-->
-<!--          data,-->
-<!--          filename: 'table-list'-->
-<!--        })-->
-<!--        this.downloadLoading = false-->
-<!--      })-->
-<!--    },-->
-<!--    formatJson(filterVal) {-->
-<!--      return this.list.map(v => filterVal.map(j => {-->
-<!--        if (j === 'timestamp') {-->
-<!--          return parseTime(v[j])-->
-<!--        } else {-->
-<!--          return v[j]-->
-<!--        }-->
-<!--      }))-->
-<!--    },-->
-<!--    getSortClass: function(key) {-->
-<!--      const sort = this.listQuery.sort-->
-<!--      return sort === `+${key}` ? 'ascending' : 'descending'-->
-<!--    }-->
-<!--  }-->
-<!--}-->
-<!--</script>-->
+        <el-form-item label="收集号" prop="collectID">
+          <!--          <span v-if="row.status === 0">待保存</span>-->
+          <div v-if="dialogStatus==='create'">
+            <el-input v-model="collectionTemp.collectID" placeholder="请输入收集号"/>
+          </div>
+          <div v-else-if="dialogStatus!=='create'">
+            <el-input :disabled="true" :readonly="true" v-model="collectionTemp.collectID"/>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="作物类别" prop="type">
+          <div v-if="dialogStatus==='create'">
+            <el-select v-model="collectionTemp.type" class="filter-item" placeholder="请选择作物类别">
+              <el-option v-for="item in fruitTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+            </el-select>
+          </div>
+          <div v-else-if="dialogStatus!=='create'">
+            <el-input :disabled="true" :readonly="true" v-model="fruitTypeCompute"/>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="作物名称" prop="name">
+          <div v-if="dialogStatus==='create'">
+            <el-input v-model="collectionTemp.name" placeholder="请输入作物名称"/>
+          </div>
+          <div v-else-if="dialogStatus!=='create'">
+            <el-input :disabled="true" :readonly="true" v-model="collectionTemp.name"/>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="种质名称" prop="germplasmName">
+          <el-input v-model="collectionTemp.germplasmName" placeholder="请输入种质名称"/>
+        </el-form-item>
+
+        <el-form-item label="种质外文名称" prop="germplasmNameEn">
+          <el-input v-model="collectionTemp.germplasmNameEn" placeholder="请输入种质外文名称"/>
+        </el-form-item>
+
+        <el-form-item label="科名" prop="sectionName">
+          <el-input v-model="collectionTemp.sectionName" placeholder="请输入科名"/>
+        </el-form-item>
+
+        <el-form-item label="属名" prop="genericName">
+          <el-input v-model="collectionTemp.genericName" placeholder="请输入属名"/>
+        </el-form-item>
+
+        <el-form-item label="学名" prop="scientificName">
+          <el-input v-model="collectionTemp.scientificName" placeholder="请输入学名"/>
+        </el-form-item>
+
+        <el-form-item label="种质资源类型" prop="resourceType">
+          <el-select v-model="collectionTemp.resourceType" class="filter-item" placeholder="请选择种质资源类型">
+            <el-option v-for="item in resourceTypeOptions " :key="item.key" :label="item.display_name"
+                       :value="item.key"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="收集方式" prop="collectMethod">
+          <el-select v-model="collectionTemp.collectMethod" class="filter-item" placeholder="请选择收集方式">
+            <el-option v-for="item in collectMethodOptions " :key="item.key" :label="item.display_name"
+                       :value="item.key"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="种质来源" prop="germplasmSource">
+          <el-input v-model="collectionTemp.germplasmSource" placeholder="请输入种质来源"/>
+        </el-form-item>
+
+        <el-form-item label="来源国" prop="sourceCountry">
+          <el-input v-model="collectionTemp.sourceCountry" placeholder="请输入来源国"/>
+        </el-form-item>
+
+        <el-form-item label="来源省(州、邦)" prop="sourceProvince">
+          <el-input v-model="collectionTemp.sourceProvince" placeholder="请输入来源省(州、邦)"/>
+        </el-form-item>
+
+        <el-form-item label="来源地" prop="source">
+          <el-input v-model="collectionTemp.source" placeholder="请输入来源地"/>
+        </el-form-item>
+
+        <el-form-item label="来源机构" prop="sourceOrg">
+          <el-input v-model="collectionTemp.sourceOrg" placeholder="请输入来源机构"/>
+        </el-form-item>
+
+        <el-form-item label="原产国" prop="originCountry">
+          <el-input v-model="collectionTemp.originCountry" placeholder="请输入原产国"/>
+        </el-form-item>
+
+        <el-form-item label="收集地经度" prop="collectPlaceLongitude">
+          <el-input v-model="collectionTemp.collectPlaceLongitude" placeholder="请输入收集地经度"/>
+        </el-form-item>
+        <el-form-item label="收集地纬度" prop="collectPlaceLatitude">
+          <el-input v-model="collectionTemp.collectPlaceLatitude" placeholder="请输入收集地纬度"/>
+        </el-form-item>
+
+        <el-form-item label="收集地海拔" prop="collectPlaceAltitude">
+          <el-input v-model="collectionTemp.collectPlaceAltitude" placeholder="请输入收集地海拔"/>
+        </el-form-item>
+        <el-form-item label="收集地土壤类型" prop="collectPlaceSoilType">
+          <el-select v-model="collectionTemp.collectPlaceSoilType" class="filter-item"
+                     placeholder="请选择收集地土壤类型"
+          >
+            <el-option v-for="item in soilTypeOptions " :key="item.key" :label="item.display_name" :value="item.key"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="收集地生态类型" prop="collectPlaceEcologyType">
+          <el-select v-model="collectionTemp.collectPlaceEcologyType" class="filter-item"
+                     placeholder="请选择收集地生态类型"
+          >
+            <el-option v-for="item in collectPlaceEcologyTypeOptions " :key="item.key" :label="item.display_name"
+                       :value="item.key"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="收集材料类型" prop="collectMaterialType">
+          <el-select v-model="collectionTemp.collectMaterialType" class="filter-item" placeholder="请选择收集材料类型">
+            <el-option v-for="item in collectMaterialTypeOptions " :key="item.key" :label="item.display_name"
+                       :value="item.key"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="收集人" prop="collectPeople">
+          <el-input v-model="collectionTemp.collectPeople" placeholder="请输入收集人"/>
+        </el-form-item>
+        <el-form-item label="收集单位" prop="collectUnit">
+          <el-input v-model="collectionTemp.collectUnit" placeholder="请输入收集单位"/>
+        </el-form-item>
+        <el-form-item label="收集时间" prop="collectTime">
+          <el-date-picker v-model="collectionTemp.collectTime" type="datetime" placeholder="选择日期"
+                          style="width:100%"
+          />
+        </el-form-item>
+        <el-form-item label="原生境图片" prop="image">
+          <el-input v-model="collectionTemp.image" placeholder="请输入原生境图片"/>
+        </el-form-item>
+        <el-form-item label="项目归口" prop="speciesName">
+          <el-input v-model="collectionTemp.speciesName" placeholder="请输入项目归口"/>
+        </el-form-item>
+        <el-form-item label="操作员" prop="operator">
+          <span>admin</span>
+        </el-form-item>
+        <el-form-item label="备注" prop="collectRemark">
+          <el-input v-model="collectionTemp.collectRemark" placeholder="请输入备注"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogCreateVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="dialogStatus==='create'?createCollectionInfo():updateCollectionInfo()">
+          确认新建
+        </el-button>
+      </div>
+    </el-dialog>
+
+
+    <el-dialog :title="'反驳'" :visible.sync="dialogRefuseVisible">
+      <div slot="default">
+        <p style="font-size: 18px;">您确定要反驳吗？</p>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelRefuse()">
+          取消
+        </el-button>
+        <el-button type="primary" @click="refuseCollect()">
+          确认反驳
+        </el-button>
+      </div>
+    </el-dialog>
+
+  </div>
+</template>
+
+<script>
+import {
+  contradictCollection,
+  deleteCollection,
+  createCollection,
+  fetchCollection,
+  fetchCollectionListByPage,
+  fetchCollectionTotal,
+  updateCollection
+} from '@/api/collectInfo'
+
+import waves from '@/directive/waves' // waves directive
+import { parseTime } from '@/utils'
+import Pagination from '@/components/Pagination'
+import Da from 'element-ui/src/locale/lang/da'
+
+const fruitTypeOptions = [
+  { key: 1, display_name: '产胶作物' },
+  { key: 2, display_name: '热带果树' },
+  { key: 3, display_name: '热带牧草' },
+  { key: 4, display_name: '热带粮食作物' },
+  { key: 5, display_name: '热带药用作物' },
+  { key: 6, display_name: '热带油料作物' },
+  { key: 7, display_name: '热带香辛饮料作物' },
+  { key: 8, display_name: '热带花卉' },
+  { key: 9, display_name: '热带纤维植物' },
+  { key: 10, display_name: '热带特种蔬菜' }
+]
+
+const fruitTypeKeyValue = fruitTypeOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
+const resourceTypeOptions = [
+  { key: 1, display_name: '野生资源' },
+  { key: 2, display_name: '半野生资源' },
+  { key: 3, display_name: '地方品种' },
+  { key: 4, display_name: '选育品种' },
+  { key: 5, display_name: '品系' },
+  { key: 6, display_name: '遗传材料其他' }
+]
+
+const resourceTypeKeyValue = resourceTypeOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
+const collectMethodOptions = [
+  { key: 1, display_name: '收集' },
+  { key: 2, display_name: '征集' },
+  { key: 3, display_name: '引用' }
+]
+
+const collectMethodKeyValue = collectMethodOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
+const soilTypeOptions = [
+  { key: 1, display_name: '砖红壤' },
+  { key: 2, display_name: '赤红壤' },
+  { key: 3, display_name: '红壤' },
+  { key: 4, display_name: '黄壤' },
+  { key: 5, display_name: '黄棕壤' },
+  { key: 6, display_name: '棕壤' }
+]
+
+const soilTypeKeyValue = soilTypeOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
+const collectPlaceEcologyTypeOptions = [
+  { key: 1, display_name: '海洋生态系统' },
+  { key: 2, display_name: '淡水生态系统' },
+  { key: 3, display_name: '冻原生态系统' },
+  { key: 4, display_name: '荒漠生态系统' },
+  { key: 5, display_name: '草原生态系统' },
+  { key: 6, display_name: '森林生态系统' },
+  { key: 7, display_name: '农田生态系统' },
+  { key: 8, display_name: '城市生态系统' }
+]
+
+const collectPlaceEcologyTypeKeyValue = collectPlaceEcologyTypeOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
+const collectMaterialTypeOptions = [
+  { key: 1, display_name: '种子' },
+  { key: 2, display_name: '果实' },
+  { key: 3, display_name: '芽' },
+  { key: 4, display_name: '芽条' },
+  { key: 5, display_name: '花粉' },
+  { key: 6, display_name: '组培材料' },
+  { key: 7, display_name: '苗木' },
+  { key: 8, display_name: '其他' }
+]
+
+const collectMaterialTypeKeyValue = collectMaterialTypeOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
+export default {
+  name: 'ComplexTable',
+  components: { Pagination },
+  directives: { waves },
+  computed: {
+    fruitTypeCompute() {
+      return fruitTypeKeyValue[this.collectionTemp.type]
+    }
+  },
+  filters: {
+    fruitTypeFilter(type) {
+      return fruitTypeKeyValue[type]
+    },
+    resourceTypeFilter(type) {
+      return resourceTypeKeyValue[type]
+    },
+    collectMethodFilter(type) {
+      return collectMethodKeyValue[type]
+    },
+    soilTypeFilter(type) {
+      return soilTypeKeyValue[type]
+    },
+    collectPlaceEcologyFilter(type) {
+      return collectPlaceEcologyTypeKeyValue[type]
+    },
+    collectMaterialTypeFilter(type) {
+      return collectMaterialTypeKeyValue[type]
+    },
+    statusFilter(status) {
+      const statusMap = {
+        0: 'primary',
+        1: 'success',
+        2: 'warning',
+        3: 'danger'
+      }
+      return statusMap[status]
+    },
+    contadictFilter(status) {
+      const statusMap = {
+        0: 'success',
+        1: 'danger'
+      }
+      return statusMap[status]
+    }
+
+  },
+  data() {
+    return {
+      fruitTypeOptions,
+      resourceTypeOptions,
+      collectMethodOptions,
+      soilTypeOptions,
+      collectPlaceEcologyTypeOptions,
+      collectMaterialTypeOptions,
+      tableKey: 0,
+      list: null,
+      total: 0,
+      listLoading: true,
+      listQuery: {
+        page: 1,
+        limit: 20,
+        importance: undefined,
+        title: undefined,
+        type: undefined,
+        sort: '+id'
+      },
+      importanceOptions: [1, 2, 3],
+      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
+      statusOptions: ['collect', 'save', 'enter', 'share'],
+      showReviewer: false,
+      collectionTemp: {
+        collectID: undefined,
+        type: '',
+        name: '',
+        germplasmName: '',
+        germplasmNameEn: '',
+        sectionName: '',
+        genericName: '',
+        scientificName: '',
+        resourceType: '',
+        collectMethod: '',
+        germplasmSource: '',
+        sourceCountry: '',
+        sourceProvince: '',
+        source: '',
+        sourceOrg: '',
+        originCountry: '',
+        originPlace: '',
+        collectPlaceLongitude: '',
+        collectPlaceLatitude: '',
+        collectPlaceAltitude: '',
+        collectPlaceSoilType: '',
+        collectPlaceEcologyType: '',
+        collectMaterialType: '',
+        collectPeople: '',
+        collectUnit: '',
+        collectTime: new Date(),
+        speciesName: '',
+        image: '',
+        collectRemark: ''
+      },
+      dialogFormVisible: false,
+      dialogRefuseVisible: false,
+      refuseID: undefined,
+      dialogStatus: '',
+      textMap: {
+        update: '修改',
+        create: '新建'
+      },
+      dialogCollectionVisible: false,
+      dialogCreateVisible: false,
+      collectionInfo: {},
+      rules: {
+        collectID: [{ required: true, message: 'collectID is required', trigger: 'blur' }],
+        type: [{ required: true, message: 'type is required', trigger: 'blur' }],
+        name: [{ required: true, message: 'name is required', trigger: 'blur' }],
+        germplasmName: [{ required: true, message: 'germplasm is required', trigger: 'blur' }],
+        genericName: [{ required: true, message: 'genericName is required', trigger: 'blur' }],
+        collectMethod: [{ required: true, message: 'collectMethod is required', trigger: 'blur' }],
+        germplasmSource: [{ required: true, message: 'germplasmsource is required', trigger: 'blur' }],
+        sourceCountry: [{ required: true, message: 'sourceCountry is required', trigger: 'blur' }],
+        sourceProvince: [{ required: true, message: 'sourceProvince is required', trigger: 'blur' }],
+        sourceOrg: [{ required: true, message: 'sourceOrg is required', trigger: 'blur' }],
+        originCountry: [{ required: true, message: 'originCountry is required', trigger: 'blur' }],
+        collectPlaceLatitude: [{ required: true, message: 'Latitude is required', trigger: 'blur' }],
+        collectPlaceLongitude: [{ required: true, message: 'Longitude is required', trigger: 'blur' }],
+        collectPlaceAltitude: [{ required: true, message: 'Altitude is required', trigger: 'blur' }],
+        collectPlaceSoilType: [{ required: true, message: 'soilType is required', trigger: 'blur' }],
+        collectPeople: [{ required: true, message: 'collectPeople is required', trigger: 'blur' }],
+        collectUnit: [{ required: true, message: 'collectUnit is required', trigger: 'blur' }]
+      },
+      downloadLoading: false
+    }
+  },
+
+  created() {
+    this.getList()
+  },
+  methods: {
+    formatDate(value) {
+      var dt = new Date(value)
+      let year = dt.getFullYear()
+      let month = (dt.getMonth() + 1).toString().padStart(2, '0')
+      let date = dt.getDate().toString().padStart(2, '0')
+      let hour = dt.getHours().toString().padStart(2, '0')
+      let minute = dt.getMinutes().toString().padStart(2, '0')
+      let second = dt.getSeconds().toString().padStart(2, '0')
+      return `${year}-${month}-${date} ${hour}:${minute}:${second}`
+    },
+    viewDetails(id) {
+      this.handleFetchCollection(id)
+    },
+
+    getList() {
+      this.listLoading = true
+      fetchCollectionListByPage(this.listQuery.page, this.listQuery.limit).then(response => {
+        this.list = response.data
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+      fetchCollectionTotal().then(response => {
+        this.total = response.data
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
+    handleFilter() {
+      this.listQuery.page = 1
+      this.getList()
+    },
+
+    sortChange(data) {
+      const { prop, order } = data
+      if (prop === 'id') {
+        this.sortByID(order)
+      }
+    },
+
+    sortByID(order) {
+      if (order === 'ascending') {
+        this.listQuery.sort = '+id'
+      } else {
+        this.listQuery.sort = '-id'
+      }
+      this.handleFilter()
+    },
+
+    resetCollectionTemp() {
+      this.collectionTemp = {
+        collectID: undefined,
+        type: '',
+        name: '',
+        germplasmName: '',
+        germplasmNameEn: '',
+        sectionName: '',
+        genericName: '',
+        scientificName: '',
+        resourceType: '',
+        collectMethod: '',
+        germplasmSource: '',
+        sourceCountry: '',
+        sourceProvince: '',
+        source: '',
+        sourceOrg: '',
+        originCountry: '',
+        originPlace: '',
+        collectPlaceLongitude: '',
+        collectPlaceLatitude: '',
+        collectPlaceAltitude: '',
+        collectPlaceSoilType: '',
+        collectPlaceEcologyType: '',
+        collectMaterialType: '',
+        collectPeople: '',
+        collectUnit: '',
+        collectTime: new Date(),
+        speciesName: '',
+        image: '',
+        collectRemark: ''
+      }
+    },
+
+    handleCreateCollectionInfo() {
+      this.resetCollectionTemp()
+      this.dialogStatus = 'create'
+      this.dialogCreateVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    createCollectionInfo() {
+      this.collectionTemp.collectTime = this.formatDate(this.collectionTemp.collectTime)
+      // console.log(this.collectionTemp.collectTime)
+      this.$refs['dataForm'].validate((valid) => {
+        // console.log(valid)
+        if (valid) {
+          createCollection(this.collectionTemp).then(() => {
+            this.list.unshift(this.collectionTemp)
+            this.dialogCreateVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Created Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+
+    handleUpdate(row) {
+      this.collectionTemp = Object.assign({}, row) // copy obj
+      this.collectionTemp.collectTime = new Date()
+      this.dialogStatus = 'update'
+      this.dialogCreateVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+
+    updateCollectionInfo() {
+      this.collectionTemp.collectTime = this.formatDate(this.collectionTemp.collectTime)
+      // console.log(this.collectionTemp.collectTime)
+      this.$refs['dataForm'].validate((valid) => {
+        // console.log(valid)
+        if (valid) {
+          const tempData = Object.assign({}, this.collectionTemp)
+          updateCollection(tempData).then(() => {
+            const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
+            this.collectionTemp.isContradict = 0
+            this.list.splice(index, 1, this.collectionTemp)
+            this.dialogCreateVisible = false
+            this.$notify({
+              title: 'Success',
+              message: '更新成功',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+
+    handleFetchCollection(id) {
+      fetchCollection(id).then(response => {
+        this.collectionInfo = response.data
+        // console.log(response.data)
+        this.dialogCollectionVisible = true
+      })
+    },
+
+    handleDelete(row) {
+      this.$confirm('确定删除这条信息吗', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async() => {
+          const index = this.list.findIndex(v => v.collectID === row.collectID)
+          this.list.splice(index, 1)
+          deleteCollection(row.collectID)
+          this.$notify({
+            title: 'Success',
+            message: '删除成功',
+            type: 'success',
+            duration: 2000
+          })
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
+
+    handleRefuse(data) {
+      this.dialogRefuseVisible = true
+      this.refuseID = data
+    },
+
+    cancelRefuse() {
+      this.dialogRefuseVisible = false
+      this.refuseID = undefined
+    },
+
+    refuseCollect() {
+      // this.$confirm('确定反驳采集信息吗', '警告', {
+      //   confirmButtonText: '确定',
+      //   cancelButtonText: '取消',
+      //   type: 'warning'
+      // }).then(async() => {
+      const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
+      this.collectionTemp.isContradict = 1
+      this.collectionTemp.status = 0
+      this.list.splice(index, 1, this.collectionTemp)
+      contradictCollection(this.refuseID)
+        .catch(err => {
+          console.error(err)
+        })
+      this.dialogRefuseVisible = false
+      this.$notify({
+        title: 'Success',
+        message: '反驳成功',
+        type: 'success',
+        duration: 2000
+      })
+
+    },
+    save(){
+
+    },
+
+    handleDownload() {
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then(excel => {
+        const tHeader = ['CollectID', 'Type', 'Name', 'GermplasmName', 'GermplasmNameEn', 'SectionName', 'GenericName', 'ScientificName', 'ResourceType', 'CollectMethod', 'GermplasmSource', 'SourceCountry', 'SourceProvince', 'Source', 'SourceOrg', 'OriginCountry', 'OriginPlace', 'CollectPlaceLongitude', 'CollectPlaceLatitude', 'CollectPlaceAltitude', 'CollectPlaceSoilType', 'CollectPlaceEcologyType', 'CollectMaterialType', 'CollectPeople', 'CollectUnit', 'CollectTime', 'SpeciesName', 'Image', 'CollectRemark']
+        const filterVal = ['collectID', 'type', 'name', 'germplasmName', 'germplasmNameEn', 'sectionName', 'genericName', 'scientificName', 'resourceType', 'collectMethod', 'germplasmSource', 'sourceCountry', 'sourceProvince', 'source', 'sourceOrg', 'originCountry', 'originPlace', 'collectPlaceLongitude', 'collectPlaceLatitude', 'collectPlaceAltitude', 'collectPlaceSoilType', 'collectPlaceEcologyType', 'collectMaterialType', 'collectPeople', 'collectUnit', 'collectTime', 'speciesName', 'image', 'collectRemark']
+        const data = this.formatJson(filterVal)
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: 'table-list'
+        })
+        this.downloadLoading = false
+      })
+    },
+    formatJson(filterVal) {
+      return this.list.map(v => filterVal.map(j => {
+        if (j === 'timestamp') {
+          return parseTime(v[j])
+        } else {
+          console.log(j + '--->' + v[j])
+          return v[j]
+        }
+      }))
+    },
+    getSortClass: function(key) {
+      const sort = this.listQuery.sort
+      return sort === `+${key}` ? 'ascending' : 'descending'
+    }
+  }
+}
+</script>
+
+
+<style scoped>
+.buttons-row {
+  display: flex;
+  justify-content: center;
+}
+
+.buttons-row > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #409EFF;
+  background-color: transparent;
+  border-color: transparent;
+  margin: 2px;
+  width: 80px;
+  height: 30px;
+  font-size: 14px;
+}
+
+</style>
+
+
+<style>
+.el-dialog__header {
+  background-color: #4A77AC;
+}
+
+.el-dialog__title {
+  color: white;
+}
+
+.detail-table {
+  display: table;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0px;
+  padding: 16px;
+}
+
+.detail-row {
+  display: table-row;
+  width: 100%;
+  font-size: 16px;
+}
+
+.detail-row:nth-of-type(even) {
+  background-color: #f5f5f5; /* 设置背景颜色 */
+}
+
+.detail-label,
+.detail-value {
+  display: table-cell;
+  padding: 8px;
+}
+
+.detail-label {
+  font-weight: bold;
+  text-align: left;
+  white-space: nowrap;
+  width: 30%;
+}
+
+.detail-value {
+  text-align: left;
+  word-break: break-all;
+}
+</style>

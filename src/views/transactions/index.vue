@@ -1,19 +1,17 @@
 <template>
-  <div class="transactions-container">
-    <div class="transactions-text">name: {{ name }}</div>
+  <div className="app-container">
+    <div style="margin:0 0 5px 20px">
+    </div>
+    <fixed-thead/>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import FixedThead from './components/FixedThead'
 
 export default {
-  name: 'Transactions',
-  computed: {
-    ...mapGetters([
-      'name'
-    ])
-  }
+  name: 'TxTable',
+  components: { FixedThead }
 }
 </script>
 

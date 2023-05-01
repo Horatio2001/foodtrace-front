@@ -7,9 +7,9 @@ export function fetchBlock() {
   })
 }
 
-export function fetchBlockByPage(data) {
+export function fetchBlockByPage(data, idx) {
   return request({
-    url: '/Blockchain/GetBlockInfoByPage/' + data,
+    url: '/Blockchain/GetBlockInfoByPage/' + data + '/' + idx,
     method: 'get',
   })
 }
