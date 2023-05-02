@@ -69,7 +69,7 @@ export default {
       blocknum: null,
       transactions: null,
       nodes: null,
-      chaincodes: 20
+      chaincodes: 21
     }
   },
   created() {

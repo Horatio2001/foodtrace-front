@@ -80,10 +80,10 @@ export default {
             radius: [15, 95],
             center: ['50%', '38%'],
             data: [
-              { value: 147, name: 'org0-foodtrace-com' },
+              { value: 221, name: 'org0-foodtrace-com' },
               { value: 4, name: 'foodtrace-com' },
-              { value: 20, name: 'org1-foodtrace-com' },
-              { value: 20, name: 'org2-foodtrace-com' }
+              { value: 21, name: 'org1-foodtrace-com' },
+              { value: 21, name: 'org2-foodtrace-com' }
             ],
             animationEasing: 'cubicInOut',
             animationDuration: 2600
@@ -94,12 +94,27 @@ export default {
     fetchData() {
       getTxByOrg().then(response => {
         // console.log(data)
-        const data = response.data.map(obj => ({
-          transactions: obj.transactions,
-          name: obj.name
-        }))
-        // console.log(data)
-        this.list = data
+        this.list = response.data
+        this.chart.setOption({
+          series: [
+            {
+              name: 'Transactions by Organization',
+              type: 'pie',
+              roseType: 'radius',
+              radius: [15, 95],
+              center: ['50%', '38%'],
+              data: [
+                { value: this.list[0].transactions, name: this.list[0].name },
+                { value: this.list[1].transactions, name: this.list[1].name },
+                { value: this.list[2].transactions, name: this.list[2].name },
+                { value: this.list[3].transactions, name: this.list[3].name }
+              ],
+              animationEasing: 'cubicInOut',
+              animationDuration: 2600
+            }
+          ]
+        })
+
         // console.log(this.list)
       })
     }

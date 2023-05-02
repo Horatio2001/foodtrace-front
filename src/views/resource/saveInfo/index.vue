@@ -148,7 +148,9 @@
             <el-button type="primary" size="small" @click="viewDetails(row.saveID)">
               查看详情
             </el-button>
-            <el-button v-if="row.isLoaded === 0 && row.status === 1" type="primary" size="small" @click="handleUpdate(row)">
+            <el-button v-if="row.isLoaded === 0 && row.status === 1" type="primary" size="small"
+                       @click="handleUpdate(row)"
+            >
               修改
             </el-button>
             <el-button v-if="row.isLoaded === 0" type="primary" size="small" @click="handleDelete(row)">
@@ -157,14 +159,13 @@
           </div>
           <div class="buttons-row">
             <el-button v-if="row.isLoaded === 0 && row.status === 1 && row.isContradict === 0" type="primary"
-                       size="small" @click="handleRefuse(row.saveID)"
+                       size="small" @click="handleRefuse(row)"
             >
               反驳
             </el-button>
             <el-button v-if="row.isLoaded === 0 && row.status === 1 && row.isContradict === 0" type="primary"
-                       size="small" @click="handleCreateSaveInfo(row)"
+                       size="small" @click="handleCreateEnterInfo(row)"
             >
-<!--              todo-->
               录入
             </el-button>
           </div>
@@ -259,7 +260,6 @@
     </el-dialog>
 
 
-
     <el-dialog :title="'修改'" :visible.sync="dialogCreateVisible">
       <el-form ref="dataForm" :rules="saveRules" :model="saveTemp" label-position="left" label-width="130px"
                style="width: auto; margin-left:50px;"
@@ -267,21 +267,23 @@
 
         <el-form-item label="收集号" prop="collectID">
           <!--          <span v-if="row.status === 0">待保存</span>-->
-            <el-input :disabled="true" :readonly="true" v-model="saveTemp.saveID"/>
+          <el-input :disabled="true" :readonly="true" v-model="saveTemp.saveID"/>
         </el-form-item>
 
         <el-form-item label="作物类别" prop="type">
-            <el-input :disabled="true" :readonly="true" v-model="fruitTypeCompute"/>
+          <el-input :disabled="true" :readonly="true" v-model="fruitTypeCompute"/>
         </el-form-item>
 
         <el-form-item label="作物名称" prop="name">
-            <el-input :disabled="true" :readonly="true" v-model="saveTemp.name"/>
+          <el-input :disabled="true" :readonly="true" v-model="saveTemp.name"/>
         </el-form-item>
 
         <el-form-item label="主要特征" prop="mainPreference">
-<!--          <el-input v-model="mainPreferenceCompute" placeholder="请输入主要特征"/>-->
+          <!--          <el-input v-model="mainPreferenceCompute" placeholder="请输入主要特征"/>-->
           <el-select v-model="saveTemp.mainPreference" class="filter-item" placeholder="请输入主要特征">
-            <el-option v-for="item in mainPreferenceOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+            <el-option v-for="item in mainPreferenceOptions" :key="item.key" :label="item.display_name"
+                       :value="item.key"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="主要用途" prop="mainUse">
@@ -298,7 +300,9 @@
         </el-form-item>
         <el-form-item label="计量单位" prop="measuringUnit">
           <el-select v-model="saveTemp.measuringUnit" class="filter-item" placeholder="请输入计量单位">
-            <el-option v-for="item in measuringUnitOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+            <el-option v-for="item in measuringUnitOptions" :key="item.key" :label="item.display_name"
+                       :value="item.key"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="保存单位" prop="saveUnit">
@@ -351,111 +355,61 @@
         <el-button @click="cancelRefuse()">
           取消
         </el-button>
-        <el-button type="primary" @click="refuseCollect()">
+        <el-button type="primary" @click="refuseSave()">
           确认反驳
         </el-button>
       </div>
     </el-dialog>
 
 
-    <el-dialog :title="'保存'" :visible.sync="dialogSaveVisible">
-      <el-form ref="dataForm" :rules="saveRules" :model="saveTemp" label-position="left" label-width="130px"
+    <el-dialog :title="'录入'" :visible.sync="dialogSaveVisible">
+      <el-form ref="dataForm" :rules="enterRules" :model="enterTemp" label-position="left" label-width="130px"
                style="width: auto; margin-left:50px;"
       >
-
         <el-form-item label="收集号" prop="collectID">
-          <el-input :disabled="true" :readonly="true" v-model="saveTemp.saveID" placeholder="请输入收集号"/>
+          <el-input :disabled="true" :readonly="true" v-model="enterTemp.enterID" placeholder="请输入收集号"/>
         </el-form-item>
-
         <el-form-item label="作物类别" prop="type">
-          <el-input :disabled="true" :readonly="true" v-model="saveTypeCompute"/>
+          <el-input :disabled="true" :readonly="true" v-model="enterTypeCompute"/>
         </el-form-item>
-
         <el-form-item label="作物名称" prop="name">
-          <el-input :disabled="true" :readonly="true" v-model="saveTemp.name"/>
+          <el-input :disabled="true" :readonly="true" v-model="enterTemp.name"/>
         </el-form-item>
-
-        <el-form-item label="主要特征" prop="mainPreference">
-          <el-select v-model="saveTemp.mainPreference" class="filter-item" placeholder="请输入主要特征">
-            <el-option v-for="item in mainPreferenceOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
-          </el-select>
+        <el-form-item label="鉴定人" prop="certifier">
+          <el-input v-model="enterTemp.certifier" placeholder="请输入鉴定人"/>
         </el-form-item>
-
-        <el-form-item label="保存设施" prop="preservationFacility">
-          <el-input v-model="saveTemp.preservationFacility" placeholder="请输入保存设施"/>
+        <el-form-item label="鉴定机构" prop="certifyOrg">
+          <el-input v-model="enterTemp.certifyOrg" placeholder="请输入鉴定机构"/>
         </el-form-item>
-
-        <el-form-item label="种质类型" prop="germplasmType">
-          <el-input v-model="saveTemp.germplasmType" placeholder="请输入种质类型"/>
+        <el-form-item label="鉴定地点" prop="certifyPlace">
+          <el-input v-model="enterTemp.certifyPlace" placeholder="请输入鉴定地点"/>
         </el-form-item>
-
-        <el-form-item label="保存数量" prop="saveQuantity">
-          <el-input v-model="saveTemp.saveQuantity" placeholder="请输入保存数量"/>
-        </el-form-item>
-
-        <el-form-item label="计量单位" prop="measuringUnit">
-          <el-select v-model="saveTemp.measuringUnit" class="filter-item" placeholder="请输入计量单位">
-            <el-option v-for="item in measuringUnitOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="保存单位" prop="saveUnit">
-          <el-input v-model="saveTemp.saveUnit" placeholder="请输入保存单位"/>
-        </el-form-item>
-
-        <el-form-item label="保存库" prop="saveVault">
-          <el-input v-model="saveTemp.saveVault" placeholder="请输入保存库"/>
-        </el-form-item>
-
-        <el-form-item label="保存地点" prop="savePlace">
-          <el-input v-model="saveTemp.savePlace" placeholder="请输入保存地点"/>
-        </el-form-item>
-
-        <el-form-item label="入库年份" prop="warehousingYear">
-          <el-date-picker v-model="saveTemp.warehousingYear" type="year" placeholder="选择日期"
+        <el-form-item label="鉴定年份" prop="certifyYear">
+          <el-date-picker v-model="enterTemp.certifyYear" type="year" placeholder="请输入鉴定年份"
                           style="width:100%"
           />
         </el-form-item>
-
-        <el-form-item label="保存性质" prop="saveProperty">
-          <el-input v-model="saveTemp.saveProperty" placeholder="请输入保存性质"/>
+        <el-form-item label="操作范围" prop="operationRange">
+          <el-input v-model="enterTemp.operationRange" placeholder="请输入操作范围"/>
         </el-form-item>
-
-        <el-form-item label="资源描述" prop="resourceDescription">
-          <el-input v-model="saveTemp.resourceDescription" placeholder="请输入资源描述"/>
-        </el-form-item>
-
-        <el-form-item label="备注" prop="resourceRemark">
-          <el-input v-model="saveTemp.resourceRemark" placeholder="请输入备注"/>
-        </el-form-item>
-
-        <el-form-item label="种质图片" prop="germplasmImage">
-          <el-input v-model="saveTemp.germplasmImage" placeholder="请输入种质图片"/>
+        <el-form-item label="录入备注" prop="enterRemark">
+          <el-input v-model="enterTemp.enterRemark" placeholder="请输入录入备注"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogSaveVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="createSaveInfo()">
-          确认保存
+        <el-button type="primary" @click="createEnterInfo()">
+          确认录入
         </el-button>
       </div>
-    </el-dialog>
 
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import {
-  contradictCollection,
-  deleteCollection,
-  createCollection,
-  fetchCollection,
-  fetchCollectionListByPage,
-  fetchCollectionTotal,
-  updateCollection, createSave
-} from '@/api/collectInfo'
 
 import {
   contradictSave,
@@ -470,7 +424,6 @@ import {
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import Da from 'element-ui/src/locale/lang/da'
 
 const fruitTypeOptions = [
   { key: 1, display_name: '产胶作物' },
@@ -569,7 +522,7 @@ const mainPreferenceOptions = [
   { key: 4, display_name: '抗虫' },
   { key: 5, display_name: '抗逆' },
   { key: 6, display_name: '高校' },
-  { key: 7, display_name: '其他' },
+  { key: 7, display_name: '其他' }
 ]
 const mainPreferenceKeyValue = mainPreferenceOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -581,7 +534,7 @@ const measuringUnitOptions = [
   { key: 2, display_name: 'kg' },
   { key: 3, display_name: '斤' },
   { key: 4, display_name: '公斤' },
-  { key: 5, display_name: '株' },
+  { key: 5, display_name: '株' }
 ]
 const measuringUnitKeyValue = measuringUnitOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -604,6 +557,9 @@ export default {
     },
     saveTypeCompute() {
       return fruitTypeKeyValue[this.saveTemp.type]
+    },
+    enterTypeCompute() {
+      return fruitTypeKeyValue[this.enterTemp.type]
     }
   },
   filters: {
@@ -684,55 +640,31 @@ export default {
         saveID: undefined,
         type: undefined,
         name: undefined,
-        mainPreference:'',
-        mainUse:'',
-        preservationFacility:'',
-        germplasmType:'',
-        saveQuantity:'',
-        measuringUnit:'',
-        saveUnit:'',
-        saveVault:'',
-        savePlace:'',
-        warehousingYear:'',
-        saveProperty:'',
-        resourceDescription:'',
-        resourceRemark:'',
-        germplasmImage:''
+        mainPreference: '',
+        mainUse: '',
+        preservationFacility: '',
+        germplasmType: '',
+        saveQuantity: '',
+        measuringUnit: '',
+        saveUnit: '',
+        saveVault: '',
+        savePlace: '',
+        warehousingYear: '',
+        saveProperty: '',
+        resourceDescription: '',
+        resourceRemark: '',
+        germplasmImage: ''
       },
-
-      collectionTemp: {
-        collectID: undefined,
-        type: '',
-        name: '',
-        germplasmName: '',
-        germplasmNameEn: '',
-        sectionName: '',
-        genericName: '',
-        scientificName: '',
-        resourceType: '',
-        collectMethod: '',
-        germplasmSource: '',
-        sourceCountry: '',
-        sourceProvince: '',
-        source: '',
-        sourceOrg: '',
-        originCountry: '',
-        originPlace: '',
-        collectPlaceLongitude: '',
-        collectPlaceLatitude: '',
-        collectPlaceAltitude: '',
-        collectPlaceSoilType: '',
-        collectPlaceEcologyType: '',
-        collectMaterialType: '',
-        collectPeople: '',
-        collectUnit: '',
-        collectTime: new Date(),
-        speciesName: '',
-        image: '',
-        collectRemark: '',
-        collectStatus:'',
-        isLoaded:'',
-        isContradicted:'',
+      enterTemp: {
+        enterID: undefined,
+        type: undefined,
+        name: undefined,
+        certifier: '',
+        certifyOrg: '',
+        certifyPlace: '',
+        certifyYear: '',
+        operationRange: '',
+        enterRemark: ''
       },
       dialogRefuseVisible: false,
       refuseID: undefined,
@@ -743,35 +675,20 @@ export default {
       },
       dialogCollectionVisible: false,
       dialogCreateVisible: false,
-      collectionInfo: {},
 
       dialogSaveVisible: false,
       saveInfo: {},
-
-      saveRules:{
+      enterInfo: {},
+      saveRules: {
         saveID: [{ required: true, message: 'saveID is required', trigger: 'blur' }],
         mainPreference: [{ required: true, message: 'mainPreference is required', trigger: 'blur' }]
       },
-
-      rules: {
-        collectID: [{ required: true, message: 'collectID is required', trigger: 'blur' }],
-        type: [{ required: true, message: 'type is required', trigger: 'blur' }],
-        name: [{ required: true, message: 'name is required', trigger: 'blur' }],
-        germplasmName: [{ required: true, message: 'germplasm is required', trigger: 'blur' }],
-        genericName: [{ required: true, message: 'genericName is required', trigger: 'blur' }],
-        collectMethod: [{ required: true, message: 'collectMethod is required', trigger: 'blur' }],
-        germplasmSource: [{ required: true, message: 'germplasmsource is required', trigger: 'blur' }],
-        sourceCountry: [{ required: true, message: 'sourceCountry is required', trigger: 'blur' }],
-        sourceProvince: [{ required: true, message: 'sourceProvince is required', trigger: 'blur' }],
-        sourceOrg: [{ required: true, message: 'sourceOrg is required', trigger: 'blur' }],
-        originCountry: [{ required: true, message: 'originCountry is required', trigger: 'blur' }],
-        collectPlaceLatitude: [{ required: true, message: 'Latitude is required', trigger: 'blur' }],
-        collectPlaceLongitude: [{ required: true, message: 'Longitude is required', trigger: 'blur' }],
-        collectPlaceAltitude: [{ required: true, message: 'Altitude is required', trigger: 'blur' }],
-        collectPlaceSoilType: [{ required: true, message: 'soilType is required', trigger: 'blur' }],
-        collectPeople: [{ required: true, message: 'collectPeople is required', trigger: 'blur' }],
-        collectUnit: [{ required: true, message: 'collectUnit is required', trigger: 'blur' }]
+      enterRules: {
+        enterID: [{ required: true, message: 'enterID is required', trigger: 'blur' }],
+        certifier: [{ required: true, message: 'certifier is required', trigger: 'blur' }],
+        certifyOrg: [{ required: true, message: 'certifyOrg is required', trigger: 'blur' }]
       },
+
       downloadLoading: false
     }
   },
@@ -796,7 +713,7 @@ export default {
       return `${year}-${month}-${date} ${hour}:${minute}:${second}`
     },
     viewDetails(id) {
-      this.handleFetchCollection(id)
+      this.handleFetchSave(id)
     },
 
     getList() {
@@ -835,118 +752,43 @@ export default {
       this.handleFilter()
     },
 
-    resetSaveTemp() {
+    resetEnterTemp() {
       this.saveTemp = {
-        saveID: undefined,
+        enterID: undefined,
         type: undefined,
         name: undefined,
-        mainPreference:'',
-        preservationFacility:'',
-        germplasmType:'',
-        saveQuantity:'',
-        measuringUnit:'',
-        saveUnit:'',
-        saveVault:'',
-        savePlace:'',
-        warehousingYear:'',
-        saveProperty:'',
-        resourceDescription:'',
-        resourceRemark:'',
-        germplasmImage:''
+        certifier: '',
+        certifyOrg: '',
+        certifyPlace: '',
+        certifyYear: '',
+        operationRange: '',
+        enterRemark: ''
       }
     },
-    handleCreateSaveInfo(data) {
-      this.resetSaveTemp()
-      this.collectionTemp = Object.assign({}, data) // copy obj
-      this.saveTemp.saveID = data.collectID
-      this.saveTemp.type = data.type
-      this.saveTemp.name = data.name
+    handleCreateEnterInfo(data) {
+      this.resetEnterTemp()
+      this.saveTemp = Object.assign({}, data) // copy obj
+      this.enterTemp.enterID = data.saveID
+      this.enterTemp.type = data.type
+      this.enterTemp.name = data.name
 
       this.dialogSaveVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createSaveInfo() {
-      // console.log(this.collectionTemp.collectTime)
+
+    createEnterInfo() {
       this.$refs['dataForm'].validate((valid) => {
         // console.log(valid)
         if (valid) {
-          createSave(this.saveTemp).then(() => {
-            const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
-            this.collectionTemp.isContradict = 0
-            this.collectionTemp.status = 1
-            this.list.splice(index, 1, this.collectionTemp)
+          this.enterTemp.certifyYear = this.formatYear(this.enterTemp.certifyYear)
+          createEnter(this.enterTemp).then(() => {
+            const index = this.list.findIndex(v => v.saveID === this.enterTemp.enterID)
+            this.saveTemp.isContradict = 0
+            this.saveTemp.status = 2
+            this.list.splice(index, 1, this.saveTemp)
             this.dialogSaveVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
-
-    resetCollectionTemp() {
-      this.collectionTemp = {
-        collectID: undefined,
-        type: '',
-        name: '',
-        germplasmName: '',
-        germplasmNameEn: '',
-        sectionName: '',
-        genericName: '',
-        scientificName: '',
-        resourceType: '',
-        collectMethod: '',
-        germplasmSource: '',
-        sourceCountry: '',
-        sourceProvince: '',
-        source: '',
-        sourceOrg: '',
-        originCountry: '',
-        originPlace: '',
-        collectPlaceLongitude: '',
-        collectPlaceLatitude: '',
-        collectPlaceAltitude: '',
-        collectPlaceSoilType: '',
-        collectPlaceEcologyType: '',
-        collectMaterialType: '',
-        collectPeople: '',
-        collectUnit: '',
-        collectTime: new Date(),
-        speciesName: '',
-        image: '',
-        collectRemark: '',
-        collectStatus:'',
-        isLoaded:'',
-        isContradicted:'',
-      }
-    },
-
-    handleCreateCollectionInfo() {
-      this.resetCollectionTemp()
-      this.dialogStatus = 'create'
-      this.dialogCreateVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    createCollectionInfo() {
-      this.collectionTemp.collectTime = this.formatDate(this.collectionTemp.collectTime)
-      this.collectionTemp.collectStatus = 0
-      this.collectionTemp.status = 0
-      this.collectionTemp.isLoaded = 0
-      this.collectionTemp.isContradicted = 0
-      // console.log(this.collectionTemp.collectTime)
-      this.$refs['dataForm'].validate((valid) => {
-        // console.log(valid)
-        if (valid) {
-          createCollection(this.collectionTemp).then(() => {
-            this.list.unshift(this.collectionTemp)
-            this.dialogCreateVisible = false
             this.$notify({
               title: 'Success',
               message: 'Created Successfully',
@@ -971,15 +813,14 @@ export default {
 
     updateSaveInfo() {
       this.saveTemp.warehousingYear = this.formatYear(this.saveTemp.warehousingYear)
-      // console.log(this.collectionTemp.collectTime)
       this.$refs['dataForm'].validate((valid) => {
         // console.log(valid)
         if (valid) {
           const tempData = Object.assign({}, this.saveTemp)
           updateSave(tempData).then(() => {
-            const index = this.list.findIndex(v => v.saveID === this.saveTemp.collectID)
+            const index = this.list.findIndex(v => v.saveID === this.saveTemp.saveID)
             this.saveTemp.isContradict = 0
-            this.list.splice(index, 1, this.collectionTemp)
+            this.list.splice(index, 1, this.saveTemp)
             this.dialogCreateVisible = false
             this.$notify({
               title: 'Success',
@@ -992,7 +833,7 @@ export default {
       })
     },
 
-    handleFetchCollection(id) {
+    handleFetchSave(id) {
       fetchSave(id).then(response => {
         this.saveInfo = response.data
         // console.log(response.data)
@@ -1022,9 +863,10 @@ export default {
         })
     },
 
-    handleRefuse(data) {
+    handleRefuse(row) {
       this.dialogRefuseVisible = true
-      this.refuseID = data
+      this.saveTemp = row
+      this.refuseID = row.saveID
     },
 
     cancelRefuse() {
@@ -1032,17 +874,11 @@ export default {
       this.refuseID = undefined
     },
 
-    refuseCollect() {
-      // this.$confirm('确定反驳采集信息吗', '警告', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).then(async() => {
-      const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
-      this.collectionTemp.isContradict = 1
-      this.collectionTemp.status = 0
-      this.list.splice(index, 1, this.collectionTemp)
-      contradictCollection(this.refuseID)
+    refuseSave() {
+      const index = this.list.findIndex(v => v.saveID === this.refuseID)
+      this.saveTemp.isContradict = 1
+      this.list.splice(index, 1, this.saveTemp)
+      contradictSave(this.refuseID)
         .catch(err => {
           console.error(err)
         })
@@ -1055,15 +891,12 @@ export default {
       })
 
     },
-    save(){
-
-    },
 
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['CollectID', 'Type', 'Name', 'GermplasmName', 'GermplasmNameEn', 'SectionName', 'GenericName', 'ScientificName', 'ResourceType', 'CollectMethod', 'GermplasmSource', 'SourceCountry', 'SourceProvince', 'Source', 'SourceOrg', 'OriginCountry', 'OriginPlace', 'CollectPlaceLongitude', 'CollectPlaceLatitude', 'CollectPlaceAltitude', 'CollectPlaceSoilType', 'CollectPlaceEcologyType', 'CollectMaterialType', 'CollectPeople', 'CollectUnit', 'CollectTime', 'SpeciesName', 'Image', 'CollectRemark']
-        const filterVal = ['collectID', 'type', 'name', 'germplasmName', 'germplasmNameEn', 'sectionName', 'genericName', 'scientificName', 'resourceType', 'collectMethod', 'germplasmSource', 'sourceCountry', 'sourceProvince', 'source', 'sourceOrg', 'originCountry', 'originPlace', 'collectPlaceLongitude', 'collectPlaceLatitude', 'collectPlaceAltitude', 'collectPlaceSoilType', 'collectPlaceEcologyType', 'collectMaterialType', 'collectPeople', 'collectUnit', 'collectTime', 'speciesName', 'image', 'collectRemark']
+        const tHeader = ['SaveID', 'Type', 'Name', 'MainPreference', 'MainUse', 'PreservationFacility', 'GermplasmType', 'SaveQuantity', 'MeasuringUnit', 'SaveUnit', 'SaveVault', 'SavePlace', 'WarehousingYear', 'SaveProperty', 'ResourceDescription', 'ResourceRemark', 'GermplasmImage']
+        const filterVal = ['saveID', 'type', 'name', 'mainPreference', 'mainUse', 'preservationFacility', 'germplasmType', 'saveQuantity', 'measuringUnit', 'saveUnit', 'saveVault', 'savePlace', 'warehousingYear', 'saveProperty', 'resourceDescription', 'resourceRemark', 'germplasmImage']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,
