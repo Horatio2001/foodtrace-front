@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="Title" style="width: 200px;" class="filter-item"
+      <el-input v-model="listQuery.collectID" placeholder="收集号" style="width: 200px;" class="filter-item"
                 @keyup.enter.native="handleFilter"
       />
-      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item"/>
+      <el-select v-model="listQuery.status" placeholder="流程状态" clearable style="width: 130px" class="filter-item">
+        <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item"/>
       </el-select>
-      <el-select v-model="listQuery.type" placeholder="Type" clearable class="filter-item" style="width: 130px">
+      <el-select v-model="listQuery.type" placeholder="作物类别" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in fruitTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'"
                    :value="item.key"
         />
@@ -28,9 +28,6 @@
       >
         下载
       </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        reviewer
-      </el-checkbox>
     </div>
 
     <el-table
@@ -151,6 +148,7 @@
             <span v-if="row.isLoaded === 1">已上链</span>
             <span v-else-if="row.isContradict === 0">正常</span>
             <span v-else-if="row.isContradict === 1">反驳中</span>
+
           </el-tag>
         </template>
       </el-table-column>
@@ -183,7 +181,7 @@
               反驳
             </el-button>
             <el-button v-if="row.isLoaded === 0 && row.status === 0 && row.isContradict === 0" type="primary"
-                       size="small" @click="save"
+                       size="small" @click="handleCreateSaveInfo(row)"
             >
               保存
             </el-button>
@@ -265,6 +263,10 @@
         <div class="detail-row">
           <div class="detail-label">原产国:</div>
           <div class="detail-value">{{ this.collectionInfo.originCountry }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">原产地:</div>
+          <div class="detail-value">{{ this.collectionInfo.originPlace }}</div>
         </div>
         <div class="detail-row">
           <div class="detail-label">收集地经度:</div>
@@ -419,6 +421,10 @@
           <el-input v-model="collectionTemp.originCountry" placeholder="请输入原产国"/>
         </el-form-item>
 
+        <el-form-item label="原产地" prop="originPlace">
+          <el-input v-model="collectionTemp.originPlace" placeholder="请输入原产地"/>
+        </el-form-item>
+
         <el-form-item label="收集地经度" prop="collectPlaceLongitude">
           <el-input v-model="collectionTemp.collectPlaceLongitude" placeholder="请输入收集地经度"/>
         </el-form-item>
@@ -501,6 +507,93 @@
       </div>
     </el-dialog>
 
+
+    <el-dialog :title="'保存'" :visible.sync="dialogSaveVisible">
+      <el-form ref="dataForm" :rules="saveRules" :model="saveTemp" label-position="left" label-width="130px"
+               style="width: auto; margin-left:50px;"
+      >
+
+        <el-form-item label="收集号" prop="collectID">
+            <el-input :disabled="true" :readonly="true" v-model="saveTemp.saveID" placeholder="请输入收集号"/>
+        </el-form-item>
+
+        <el-form-item label="作物类别" prop="type">
+          <el-input :disabled="true" :readonly="true" v-model="saveTypeCompute"/>
+        </el-form-item>
+
+        <el-form-item label="作物名称" prop="name">
+          <el-input :disabled="true" :readonly="true" v-model="saveTemp.name"/>
+        </el-form-item>
+
+        <el-form-item label="主要特征" prop="mainPreference">
+          <el-select v-model="saveTemp.mainPreference" class="filter-item" placeholder="请输入主要特征">
+            <el-option v-for="item in mainPreferenceOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="保存设施" prop="preservationFacility">
+          <el-input v-model="saveTemp.preservationFacility" placeholder="请输入保存设施"/>
+        </el-form-item>
+
+        <el-form-item label="种质类型" prop="germplasmType">
+          <el-input v-model="saveTemp.germplasmType" placeholder="请输入种质类型"/>
+        </el-form-item>
+
+        <el-form-item label="保存数量" prop="saveQuantity">
+          <el-input v-model="saveTemp.saveQuantity" placeholder="请输入保存数量"/>
+        </el-form-item>
+
+        <el-form-item label="计量单位" prop="measuringUnit">
+          <el-select v-model="saveTemp.measuringUnit" class="filter-item" placeholder="请输入计量单位">
+            <el-option v-for="item in measuringUnitOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="保存单位" prop="saveUnit">
+          <el-input v-model="saveTemp.saveUnit" placeholder="请输入保存单位"/>
+        </el-form-item>
+
+        <el-form-item label="保存库" prop="saveVault">
+          <el-input v-model="saveTemp.saveVault" placeholder="请输入保存库"/>
+        </el-form-item>
+
+        <el-form-item label="保存地点" prop="savePlace">
+          <el-input v-model="saveTemp.savePlace" placeholder="请输入保存地点"/>
+        </el-form-item>
+
+        <el-form-item label="入库年份" prop="warehousingYear">
+<!--          <el-input v-model="saveTemp.warehousingYear" placeholder="请输入入库年份"/>-->
+          <el-date-picker v-model="saveTemp.warehousingYear" type="year" placeholder="请输入入库年份"
+                          style="width:100%"
+          />
+        </el-form-item>
+
+        <el-form-item label="保存性质" prop="saveProperty">
+          <el-input v-model="saveTemp.saveProperty" placeholder="请输入保存性质"/>
+        </el-form-item>
+
+        <el-form-item label="资源描述" prop="resourceDescription">
+          <el-input v-model="saveTemp.resourceDescription" placeholder="请输入资源描述"/>
+        </el-form-item>
+
+        <el-form-item label="备注" prop="resourceRemark">
+          <el-input v-model="saveTemp.resourceRemark" placeholder="请输入备注"/>
+        </el-form-item>
+
+        <el-form-item label="种质图片" prop="germplasmImage">
+          <el-input v-model="saveTemp.germplasmImage" placeholder="请输入种质图片"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogSaveVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" @click="createSaveInfo()">
+          确认保存
+        </el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -512,7 +605,7 @@ import {
   fetchCollection,
   fetchCollectionListByPage,
   fetchCollectionTotal,
-  updateCollection
+  updateCollection, createSave
 } from '@/api/collectInfo'
 
 import waves from '@/directive/waves' // waves directive
@@ -609,6 +702,33 @@ const collectMaterialTypeKeyValue = collectMaterialTypeOptions.reduce((acc, cur)
   return acc
 }, {})
 
+// save
+const mainPreferenceOptions = [
+  { key: 1, display_name: '高产' },
+  { key: 2, display_name: '优质' },
+  { key: 3, display_name: '抗病' },
+  { key: 4, display_name: '抗虫' },
+  { key: 5, display_name: '抗逆' },
+  { key: 6, display_name: '高校' },
+  { key: 7, display_name: '其他' },
+]
+const mainPreferenceKeyValue = mainPreferenceOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
+const measuringUnitOptions = [
+  { key: 1, display_name: 'g' },
+  { key: 2, display_name: 'kg' },
+  { key: 3, display_name: '斤' },
+  { key: 4, display_name: '公斤' },
+  { key: 5, display_name: '株' },
+]
+const measuringUnitKeyValue = measuringUnitOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
 export default {
   name: 'ComplexTable',
   components: { Pagination },
@@ -616,6 +736,9 @@ export default {
   computed: {
     fruitTypeCompute() {
       return fruitTypeKeyValue[this.collectionTemp.type]
+    },
+    saveTypeCompute() {
+      return fruitTypeKeyValue[this.saveTemp.type]
     }
   },
   filters: {
@@ -637,6 +760,13 @@ export default {
     collectMaterialTypeFilter(type) {
       return collectMaterialTypeKeyValue[type]
     },
+    mainPreferenceFilter(type) {
+      return mainPreferenceKeyValue[type]
+    },
+    measuringUnitFilter(type) {
+      return measuringUnitKeyValue[type]
+    },
+
     statusFilter(status) {
       const statusMap = {
         0: 'primary',
@@ -663,6 +793,8 @@ export default {
       soilTypeOptions,
       collectPlaceEcologyTypeOptions,
       collectMaterialTypeOptions,
+      mainPreferenceOptions,
+      measuringUnitOptions,
       tableKey: 0,
       list: null,
       total: 0,
@@ -672,13 +804,36 @@ export default {
         limit: 20,
         importance: undefined,
         title: undefined,
+
         type: undefined,
+        status: undefined,
+        collectID: undefined,
+
         sort: '+id'
       },
       importanceOptions: [1, 2, 3],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
-      statusOptions: ['collect', 'save', 'enter', 'share'],
+      statusOptions: ['待保存', '待录入', '待共享', '已共享'],
       showReviewer: false,
+      saveTemp: {
+        saveID: undefined,
+        type: undefined,
+        name: undefined,
+        mainPreference:'',
+        preservationFacility:'',
+        germplasmType:'',
+        saveQuantity:'',
+        measuringUnit:'',
+        saveUnit:'',
+        saveVault:'',
+        savePlace:'',
+        warehousingYear:'',
+        saveProperty:'',
+        resourceDescription:'',
+        resourceRemark:'',
+        germplasmImage:''
+      },
+
       collectionTemp: {
         collectID: undefined,
         type: '',
@@ -708,9 +863,11 @@ export default {
         collectTime: new Date(),
         speciesName: '',
         image: '',
-        collectRemark: ''
+        collectRemark: '',
+        collectStatus:'',
+        isLoaded:'',
+        isContradicted:'',
       },
-      dialogFormVisible: false,
       dialogRefuseVisible: false,
       refuseID: undefined,
       dialogStatus: '',
@@ -721,6 +878,15 @@ export default {
       dialogCollectionVisible: false,
       dialogCreateVisible: false,
       collectionInfo: {},
+
+      dialogSaveVisible: false,
+      saveInfo: {},
+
+      saveRules:{
+        saveID: [{ required: true, message: 'saveID is required', trigger: 'blur' }],
+        mainPreference: [{ required: true, message: 'mainPreference is required', trigger: 'blur' }]
+      },
+
       rules: {
         collectID: [{ required: true, message: 'collectID is required', trigger: 'blur' }],
         type: [{ required: true, message: 'type is required', trigger: 'blur' }],
@@ -748,6 +914,11 @@ export default {
     this.getList()
   },
   methods: {
+    formatYear(value) {
+      var dt = new Date(value)
+      let year = dt.getFullYear()
+      return `${year}`
+    },
     formatDate(value) {
       var dt = new Date(value)
       let year = dt.getFullYear()
@@ -798,6 +969,61 @@ export default {
       this.handleFilter()
     },
 
+    resetSaveTemp() {
+      this.saveTemp = {
+        saveID: undefined,
+        type: undefined,
+        name: undefined,
+        mainPreference:'',
+        preservationFacility:'',
+        germplasmType:'',
+        saveQuantity:'',
+        measuringUnit:'',
+        saveUnit:'',
+        saveVault:'',
+        savePlace:'',
+        warehousingYear:'',
+        saveProperty:'',
+        resourceDescription:'',
+        resourceRemark:'',
+        germplasmImage:''
+      }
+    },
+    handleCreateSaveInfo(data) {
+      this.resetSaveTemp()
+      this.collectionTemp = Object.assign({}, data) // copy obj
+      this.saveTemp.saveID = data.collectID
+      this.saveTemp.type = data.type
+      this.saveTemp.name = data.name
+
+      this.dialogSaveVisible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].clearValidate()
+      })
+    },
+    createSaveInfo() {
+      // console.log(this.collectionTemp.collectTime)
+      this.saveTemp.warehousingYear = this.formatYear(this.saveTemp.warehousingYear)
+      this.$refs['dataForm'].validate((valid) => {
+        // console.log(valid)
+        if (valid) {
+          createSave(this.saveTemp).then(() => {
+            const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
+            this.collectionTemp.isContradict = 0
+            this.collectionTemp.status = 1
+            this.list.splice(index, 1, this.collectionTemp)
+            this.dialogSaveVisible = false
+            this.$notify({
+              title: 'Success',
+              message: 'Created Successfully',
+              type: 'success',
+              duration: 2000
+            })
+          })
+        }
+      })
+    },
+
     resetCollectionTemp() {
       this.collectionTemp = {
         collectID: undefined,
@@ -828,7 +1054,10 @@ export default {
         collectTime: new Date(),
         speciesName: '',
         image: '',
-        collectRemark: ''
+        collectRemark: '',
+        collectStatus:'',
+        isLoaded:'',
+        isContradicted:'',
       }
     },
 
@@ -842,6 +1071,10 @@ export default {
     },
     createCollectionInfo() {
       this.collectionTemp.collectTime = this.formatDate(this.collectionTemp.collectTime)
+      this.collectionTemp.collectStatus = 0
+      this.collectionTemp.status = 0
+      this.collectionTemp.isLoaded = 0
+      this.collectionTemp.isContradicted = 0
       // console.log(this.collectionTemp.collectTime)
       this.$refs['dataForm'].validate((valid) => {
         // console.log(valid)

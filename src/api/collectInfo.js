@@ -22,8 +22,14 @@ export function fetchCollection(data) {
 }
 
 export function createCollection(data) {
+  // collectStatus:'',
+  //   isLoaded:'',
+  //   isContradicted:'',
   const params = {}
   for (const key in data) {
+    if (key === 'collectStatus' || key === 'isLoaded' || key==='isContradicted') {
+      continue
+    }
     if (data.hasOwnProperty(key) && data[key] !== '') {
       params[key.charAt(0).toUpperCase() + key.slice(1)] = data[key];
     }
@@ -70,5 +76,22 @@ export function contradictCollection(data) {
     params: {
       fruitInfoID : data
     }
+  })
+}
+
+export function createSave(data) {
+  const params = {}
+  for (const key in data) {
+    if (key === 'name' || key === 'type') {
+      continue
+    }
+    if (data.hasOwnProperty(key) && data[key] !== '') {
+      params[key.charAt(0).toUpperCase() + key.slice(1)] = data[key];
+    }
+  }
+  return request({
+    url: '/Info/AddSaveInfoInSql',
+    method: 'post',
+    params
   })
 }
