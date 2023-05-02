@@ -18,11 +18,6 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
-                 @click="handleCreateCollectionInfo"
-      >
-        新增
-      </el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download"
                  @click="handleDownload"
       >
@@ -37,14 +32,14 @@
       border
       fit
       highlight-current-row
-      style="width: 100%;"
+      style="width: 90%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="收集号" prop="collectID" sortable="custom" align="center" width="80"
-                       :class-name="getSortClass('collectID')"
+      <el-table-column label="收集号" prop="shareID" sortable="custom" align="center" width="102"
+                       :class-name="getSortClass('shareID')"
       >
         <template slot-scope="{row}">
-          <span>{{ row.collectID }}</span>
+          <span>{{ row.shareID }}</span>
         </template>
       </el-table-column>
       <el-table-column label="流程状态" prop="status" class-name="status-col" width="100">
@@ -57,92 +52,51 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="作物类别" prop="type" align="center" width="110">
+      <el-table-column label="作物类别" prop="type" align="center" width="130">
         <template slot-scope="{row}">
           <span>
             {{ row.type | fruitTypeFilter }}
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="作物名称" prop="name" align="center" width="80">
+      <el-table-column label="作物名称" prop="name" align="center" width="100">
         <template slot-scope="{row}">
           <span>
             {{ row.name }}
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="种质名称" prop="germplasmName" align="center" width="80">
+      <el-table-column label="共享对象" prop="shareObj" align="center" width="120">
         <template slot-scope="{row}">
-          <span>
-            {{ row.germplasmName }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="科名" prop="sectionName" align="center" width="80">
-        <template slot-scope="{row}">
-          <span>
-            {{ row.sectionName }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="属名" prop="genericName" align="center" width="80">
-        <template slot-scope="{row}">
-          <span>
-            {{ row.genericName }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="学名" prop="scientificName" align="center" width="80">
-        <template slot-scope="{row}">
-          <span>
-            {{ row.scientificName }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="种质资源类型" prop="resourceType" align="center" width="80">
-        <template slot-scope="{row}">
-          <span>
-            {{ row.resourceType | resourceTypeFilter }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="收集方式" prop="collectMethod" align="center" width="80">
-        <template slot-scope="{row}">
-          <span>
-            {{ row.collectMethod | collectMethodFilter }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="收集人" prop="collectPeople" align="center" width="80">
-        <template slot-scope="{row}">
-          <span>
-            {{ row.collectPeople }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="收集单位" prop="collectUnit" align="center" width="80">
-        <template slot-scope="{row}">
-          <span>
-            {{ row.collectUnit }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="原生境图片" prop="image" align="center" width="80">
-        <template slot-scope="{row}">
-          <span>
-            {{ row.image }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="项目归口" prop="speciesName" align="center" width="80">
-        <template slot-scope="{row}">
-          <span>
-            {{ row.speciesName }}
-          </span>
+          <span>{{ row.shareObj }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column label="操作状态" prop="idContradict" class-name="status-col" width="100">
+      <el-table-column label="联系方式" prop="contactInfo" align="center" width="120">
+        <template slot-scope="{row}">
+          <span>{{ row.contactInfo }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="共享方式" prop="shareMode" align="center" width="120">
+        <template slot-scope="{row}">
+          <span>{{ row.shareMode | shareModeFilter}}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="共享用途" prop="shareUse" align="center" width="120">
+        <template slot-scope="{row}">
+          <span>{{ row.shareUse | shareUseFilter}}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="共享份次" prop="shareNum" align="center" width="120">
+        <template slot-scope="{row}">
+          <span>{{ row.shareNum }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="操作状态" prop="idContradict" class-name="status-col" width="120">
         <template slot-scope="{row}">
           <el-tag :type="row.isContradict | contadictFilter">
             <span v-if="row.isLoaded === 1">已上链</span>
@@ -153,7 +107,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作员" prop="type" sortable="custom" align="center" width="80">
+      <el-table-column label="操作员" prop="type" sortable="custom" align="center" width="100">
         <template slot-scope="{row}">
           <span>
             admin
@@ -161,13 +115,16 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
+
+      <el-table-column label="操作" align="center" width="250" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <div class="buttons-row">
-            <el-button type="primary" size="small" @click="viewDetails(row.collectID)">
+            <el-button type="primary" size="small" @click="viewDetails(row.shareID)">
               查看详情
             </el-button>
-            <el-button v-if="row.isLoaded === 0 && row.status === 0" type="primary" size="small" @click="handleUpdate(row)">
+            <el-button v-if="row.isLoaded === 0 && row.status === 3" type="primary" size="small"
+                       @click="handleUpdate(row)"
+            >
               修改
             </el-button>
             <el-button v-if="row.isLoaded === 0" type="primary" size="small" @click="handleDelete(row)">
@@ -175,319 +132,121 @@
             </el-button>
           </div>
           <div class="buttons-row">
-            <el-button v-if="row.isLoaded === 0 && row.status === 0 && row.isContradict === 0" type="primary"
-                       size="small" @click="handleRefuse(row.collectID)"
+            <el-button v-if="row.isLoaded === 0 && row.status === 3 && row.isContradict === 0" type="primary"
+                       size="small" @click="handleRefuse(row)"
             >
               反驳
-            </el-button>
-            <el-button v-if="row.isLoaded === 0 && row.status === 0 && row.isContradict === 0" type="primary"
-                       size="small" @click="handleCreateSaveInfo(row)"
-            >
-              保存
             </el-button>
           </div>
         </template>
       </el-table-column>
-
     </el-table>
-
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
                 @pagination="getList"
     />
 
-    <el-dialog :visible.sync="dialogCollectionVisible" title="收集信息详情" :close-on-click-modal="false"
+    <el-dialog :visible.sync="dialogCollectionVisible" title="共享信息详情" :close-on-click-modal="false"
                :show-close="false"
                class="collection-dialog"
     >
       <div class="detail-table">
         <div class="detail-row">
           <div class="detail-label">收集号:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectID }}</div>
+          <div class="detail-value">{{ this.shareInfo.shareID }}</div>
         </div>
         <div class="detail-row">
           <div class="detail-label">作物类别:</div>
-          <div class="detail-value">{{ this.collectionInfo.type | fruitTypeFilter }}</div>
+          <div class="detail-value">{{ this.shareInfo.type | fruitTypeFilter }}</div>
         </div>
         <div class="detail-row">
           <div class="detail-label">作物名称:</div>
-          <div class="detail-value">{{ this.collectionInfo.name }}</div>
+          <div class="detail-value">{{ this.shareInfo.name }}</div>
         </div>
         <div class="detail-row">
-          <div class="detail-label">种质名称:</div>
-          <div class="detail-value">{{ this.collectionInfo.germplasmName }}</div>
+          <div class="detail-label">共享对象:</div>
+          <div class="detail-value">{{ this.shareInfo.shareObj }}</div>
         </div>
         <div class="detail-row">
-          <div class="detail-label">种质外文名称:</div>
-          <div class="detail-value">{{ this.collectionInfo.germplasmNameEn }}</div>
+          <div class="detail-label">联系方式:</div>
+          <div class="detail-value">{{ this.shareInfo.contactInfo }}</div>
         </div>
         <div class="detail-row">
-          <div class="detail-label">科名:</div>
-          <div class="detail-value">{{ this.collectionInfo.sectionName }}</div>
+          <div class="detail-label">共享方式:</div>
+          <div class="detail-value">{{ this.shareInfo.shareMode | shareModeFilter}}</div>
         </div>
         <div class="detail-row">
-          <div class="detail-label">属名:</div>
-          <div class="detail-value">{{ this.collectionInfo.genericName }}</div>
+          <div class="detail-label">共享用途:</div>
+          <div class="detail-value">{{ this.shareInfo.shareUse | shareUseFilter}}</div>
         </div>
         <div class="detail-row">
-          <div class="detail-label">学名:</div>
-          <div class="detail-value">{{ this.collectionInfo.scientificName }}</div>
+          <div class="detail-label">共享份次:</div>
+          <div class="detail-value">{{ this.shareInfo.shareNum }}</div>
         </div>
         <div class="detail-row">
-          <div class="detail-label">种质资源类型:</div>
-          <div class="detail-value">{{ this.collectionInfo.resourceType | resourceTypeFilter }}</div>
+          <div class="detail-label">共享开始时间:</div>
+          <div class="detail-value">{{ formatDate(this.shareInfo.shareBeginTime) }}</div>
         </div>
         <div class="detail-row">
-          <div class="detail-label">收集方式:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectMethod | collectMethodFilter }}</div>
+          <div class="detail-label">共享结束时间:</div>
+          <div class="detail-value">{{ formatDate(this.shareInfo.shareEndTime) }}</div>
         </div>
-        <div class="detail-row">
-          <div class="detail-label">种质来源:</div>
-          <div class="detail-value">{{ this.collectionInfo.germplasmSource }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">来源国:</div>
-          <div class="detail-value">{{ this.collectionInfo.sourceCountry }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">来源省(州、邦):</div>
-          <div class="detail-value">{{ this.collectionInfo.sourceProvince }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">来源地:</div>
-          <div class="detail-value">{{ this.collectionInfo.source }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">来源机构:</div>
-          <div class="detail-value">{{ this.collectionInfo.sourceOrg }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">原产国:</div>
-          <div class="detail-value">{{ this.collectionInfo.originCountry }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">原产地:</div>
-          <div class="detail-value">{{ this.collectionInfo.originPlace }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">收集地经度:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectPlaceLongitude }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">收集地纬度:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectPlaceLatitude }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">收集地海拔:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectPlaceAltitude }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">收集地土壤类型:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectPlaceSoilType | soilTypeFilter }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">收集地生态类型:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectPlaceEcologyType | collectPlaceEcologyFilter }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">收集材料类型:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectMaterialType | collectMaterialTypeFilter }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">收集人:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectPeople }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">收集单位:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectUnit }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">收集时间:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectTime }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">原生境图片:</div>
-          <div class="detail-value">{{ this.collectionInfo.image }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">项目归口:</div>
-          <div class="detail-value">{{ this.collectionInfo.speciesName }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">操作员:</div>
-          <div class="detail-value">admin</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">备注:</div>
-          <div class="detail-value">{{ this.collectionInfo.collectRemark }}</div>
-        </div>
+
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogCollectionVisible = false" type="primary">关闭</el-button>
       </span>
     </el-dialog>
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogCreateVisible">
-      <el-form ref="dataForm" :rules="rules" :model="collectionTemp" label-position="left" label-width="130px"
+
+    <el-dialog :title="'修改'" :visible.sync="dialogCreateVisible">
+      <el-form ref="dataForm2" :rules="shareRules" :model="shareTemp" label-position="left" label-width="130px"
                style="width: auto; margin-left:50px;"
       >
 
-        <el-form-item label="收集号" prop="collectID">
-          <!--          <span v-if="row.status === 0">待保存</span>-->
-          <div v-if="dialogStatus==='create'">
-            <el-input v-model="collectionTemp.collectID" placeholder="请输入收集号"/>
-          </div>
-          <div v-else-if="dialogStatus!=='create'">
-            <el-input :disabled="true" :readonly="true" v-model="collectionTemp.collectID"/>
-          </div>
+        <el-form-item label="收集号" prop="enterID">
+          <el-input :disabled="true" :readonly="true" v-model="shareTemp.shareID"/>
         </el-form-item>
 
         <el-form-item label="作物类别" prop="type">
-          <div v-if="dialogStatus==='create'">
-            <el-select v-model="collectionTemp.type" class="filter-item" placeholder="请选择作物类别">
-              <el-option v-for="item in fruitTypeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
-            </el-select>
-          </div>
-          <div v-else-if="dialogStatus!=='create'">
-            <el-input :disabled="true" :readonly="true" v-model="fruitTypeCompute"/>
-          </div>
+          <el-input :disabled="true" :readonly="true" v-model="shareTypeCompute"/>
         </el-form-item>
 
         <el-form-item label="作物名称" prop="name">
-          <div v-if="dialogStatus==='create'">
-            <el-input v-model="collectionTemp.name" placeholder="请输入作物名称"/>
-          </div>
-          <div v-else-if="dialogStatus!=='create'">
-            <el-input :disabled="true" :readonly="true" v-model="collectionTemp.name"/>
-          </div>
+          <el-input :disabled="true" :readonly="true" v-model="shareTemp.name"/>
         </el-form-item>
 
-        <el-form-item label="种质名称" prop="germplasmName">
-          <el-input v-model="collectionTemp.germplasmName" placeholder="请输入种质名称"/>
+        <el-form-item label="共享对象" prop="shareObj">
+          <el-input v-model="shareTemp.shareObj" placeholder="请输入共享对象"/>
         </el-form-item>
-
-        <el-form-item label="种质外文名称" prop="germplasmNameEn">
-          <el-input v-model="collectionTemp.germplasmNameEn" placeholder="请输入种质外文名称"/>
+        <el-form-item label="联系方式" prop="contactInfo">
+          <el-input v-model="shareTemp.contactInfo" placeholder="请输入联系方式"/>
         </el-form-item>
-
-        <el-form-item label="科名" prop="sectionName">
-          <el-input v-model="collectionTemp.sectionName" placeholder="请输入科名"/>
-        </el-form-item>
-
-        <el-form-item label="属名" prop="genericName">
-          <el-input v-model="collectionTemp.genericName" placeholder="请输入属名"/>
-        </el-form-item>
-
-        <el-form-item label="学名" prop="scientificName">
-          <el-input v-model="collectionTemp.scientificName" placeholder="请输入学名"/>
-        </el-form-item>
-
-        <el-form-item label="种质资源类型" prop="resourceType">
-          <el-select v-model="collectionTemp.resourceType" class="filter-item" placeholder="请选择种质资源类型">
-            <el-option v-for="item in resourceTypeOptions " :key="item.key" :label="item.display_name"
-                       :value="item.key"
-            />
+        <el-form-item label="共享方式" prop="shareMode">
+          <el-select v-model="shareTemp.shareMode" class="filter-item" placeholder="请输入共享方式">
+            <el-option v-for="item in shareModeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
           </el-select>
         </el-form-item>
-
-        <el-form-item label="收集方式" prop="collectMethod">
-          <el-select v-model="collectionTemp.collectMethod" class="filter-item" placeholder="请选择收集方式">
-            <el-option v-for="item in collectMethodOptions " :key="item.key" :label="item.display_name"
-                       :value="item.key"
-            />
+        <el-form-item label="共享用途" prop="shareUse">
+          <el-select v-model="shareTemp.shareUse" class="filter-item" placeholder="请输入共享用途">
+            <el-option v-for="item in shareUseOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
           </el-select>
         </el-form-item>
-
-        <el-form-item label="种质来源" prop="germplasmSource">
-          <el-input v-model="collectionTemp.germplasmSource" placeholder="请输入种质来源"/>
+        <el-form-item label="共享份次" prop="shareNum">
+          <el-input v-model="shareTemp.shareNum" placeholder="请输入共享份次"/>
         </el-form-item>
-
-        <el-form-item label="来源国" prop="sourceCountry">
-          <el-input v-model="collectionTemp.sourceCountry" placeholder="请输入来源国"/>
+        <el-form-item label="共享开始时间" prop="shareBeginTime">
+          <el-date-picker v-model="shareTemp.shareBeginTime" type="datetime" placeholder="请选择共享开始时间"/>
         </el-form-item>
-
-        <el-form-item label="来源省(州、邦)" prop="sourceProvince">
-          <el-input v-model="collectionTemp.sourceProvince" placeholder="请输入来源省(州、邦)"/>
-        </el-form-item>
-
-        <el-form-item label="来源地" prop="source">
-          <el-input v-model="collectionTemp.source" placeholder="请输入来源地"/>
-        </el-form-item>
-
-        <el-form-item label="来源机构" prop="sourceOrg">
-          <el-input v-model="collectionTemp.sourceOrg" placeholder="请输入来源机构"/>
-        </el-form-item>
-
-        <el-form-item label="原产国" prop="originCountry">
-          <el-input v-model="collectionTemp.originCountry" placeholder="请输入原产国"/>
-        </el-form-item>
-
-        <el-form-item label="原产地" prop="originPlace">
-          <el-input v-model="collectionTemp.originPlace" placeholder="请输入原产地"/>
-        </el-form-item>
-
-        <el-form-item label="收集地经度" prop="collectPlaceLongitude">
-          <el-input v-model="collectionTemp.collectPlaceLongitude" placeholder="请输入收集地经度"/>
-        </el-form-item>
-        <el-form-item label="收集地纬度" prop="collectPlaceLatitude">
-          <el-input v-model="collectionTemp.collectPlaceLatitude" placeholder="请输入收集地纬度"/>
-        </el-form-item>
-
-        <el-form-item label="收集地海拔" prop="collectPlaceAltitude">
-          <el-input v-model="collectionTemp.collectPlaceAltitude" placeholder="请输入收集地海拔"/>
-        </el-form-item>
-        <el-form-item label="收集地土壤类型" prop="collectPlaceSoilType">
-          <el-select v-model="collectionTemp.collectPlaceSoilType" class="filter-item"
-                     placeholder="请选择收集地土壤类型"
-          >
-            <el-option v-for="item in soilTypeOptions " :key="item.key" :label="item.display_name" :value="item.key"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="收集地生态类型" prop="collectPlaceEcologyType">
-          <el-select v-model="collectionTemp.collectPlaceEcologyType" class="filter-item"
-                     placeholder="请选择收集地生态类型"
-          >
-            <el-option v-for="item in collectPlaceEcologyTypeOptions " :key="item.key" :label="item.display_name"
-                       :value="item.key"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="收集材料类型" prop="collectMaterialType">
-          <el-select v-model="collectionTemp.collectMaterialType" class="filter-item" placeholder="请选择收集材料类型">
-            <el-option v-for="item in collectMaterialTypeOptions " :key="item.key" :label="item.display_name"
-                       :value="item.key"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="收集人" prop="collectPeople">
-          <el-input v-model="collectionTemp.collectPeople" placeholder="请输入收集人"/>
-        </el-form-item>
-        <el-form-item label="收集单位" prop="collectUnit">
-          <el-input v-model="collectionTemp.collectUnit" placeholder="请输入收集单位"/>
-        </el-form-item>
-        <el-form-item label="收集时间" prop="collectTime">
-          <el-date-picker v-model="collectionTemp.collectTime" type="datetime" placeholder="选择日期"
-                          style="width:100%"
-          />
-        </el-form-item>
-        <el-form-item label="原生境图片" prop="image">
-          <el-input v-model="collectionTemp.image" placeholder="请输入原生境图片"/>
-        </el-form-item>
-        <el-form-item label="项目归口" prop="speciesName">
-          <el-input v-model="collectionTemp.speciesName" placeholder="请输入项目归口"/>
-        </el-form-item>
-        <el-form-item label="操作员" prop="operator">
-          <span>admin</span>
-        </el-form-item>
-        <el-form-item label="备注" prop="collectRemark">
-          <el-input v-model="collectionTemp.collectRemark" placeholder="请输入备注"/>
+        <el-form-item label="共享结束时间" prop="shareEndTime">
+          <el-date-picker v-model="shareTemp.shareEndTime" type="datetime" placeholder="请选择共享结束时间"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogCreateVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createCollectionInfo():updateCollectionInfo()">
-          确认新建
+        <el-button type="primary" @click="updateEnterInfo()">
+          确认
         </el-button>
       </div>
     </el-dialog>
@@ -501,114 +260,122 @@
         <el-button @click="cancelRefuse()">
           取消
         </el-button>
-        <el-button type="primary" @click="refuseCollect()">
+        <el-button type="primary" @click="refuseEnter()">
           确认反驳
         </el-button>
       </div>
     </el-dialog>
 
 
-    <el-dialog :title="'保存'" :visible.sync="dialogSaveVisible">
-      <el-form ref="dataForm" :rules="saveRules" :model="saveTemp" label-position="left" label-width="130px"
+    <el-dialog :title="'共享'" :visible.sync="dialogSaveVisible">
+      <el-form ref="dataForm" :rules="shareRules" :model="shareTemp" label-position="left" label-width="130px"
                style="width: auto; margin-left:50px;"
       >
-
-        <el-form-item label="收集号" prop="collectID">
-          <el-input :disabled="true" :readonly="true" v-model="saveTemp.saveID" placeholder="请输入收集号"/>
+        <el-form-item label="收集号" prop="shareID">
+          <el-input :disabled="true" :readonly="true" v-model="shareTemp.shareID" placeholder="请输入收集号"/>
         </el-form-item>
-
         <el-form-item label="作物类别" prop="type">
-          <el-input :disabled="true" :readonly="true" v-model="saveTypeCompute"/>
+          <el-input :disabled="true" :readonly="true" v-model="shareTypeCompute"/>
         </el-form-item>
-
         <el-form-item label="作物名称" prop="name">
-          <el-input :disabled="true" :readonly="true" v-model="saveTemp.name"/>
+          <el-input :disabled="true" :readonly="true" v-model="shareTemp.name"/>
         </el-form-item>
-
-        <el-form-item label="主要特征" prop="mainPreference">
-          <el-select v-model="saveTemp.mainPreference" class="filter-item" placeholder="请输入主要特征">
-            <el-option v-for="item in mainPreferenceOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+        <el-form-item label="共享对象" prop="shareObj">
+          <el-input v-model="shareTemp.shareObj" placeholder="请输入共享对象"/>
+        </el-form-item>
+        <el-form-item label="联系方式" prop="contactInfo">
+          <el-input v-model="shareTemp.contactInfo" placeholder="请输入联系方式"/>
+        </el-form-item>
+        <el-form-item label="共享方式" prop="shareMode">
+          <el-select v-model="shareTemp.shareMode" class="filter-item" placeholder="请输入共享方式">
+            <el-option v-for="item in shareModeOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
           </el-select>
         </el-form-item>
-
-        <el-form-item label="保存设施" prop="preservationFacility">
-          <el-input v-model="saveTemp.preservationFacility" placeholder="请输入保存设施"/>
-        </el-form-item>
-
-        <el-form-item label="种质类型" prop="germplasmType">
-          <el-input v-model="saveTemp.germplasmType" placeholder="请输入种质类型"/>
-        </el-form-item>
-
-        <el-form-item label="保存数量" prop="saveQuantity">
-          <el-input v-model="saveTemp.saveQuantity" placeholder="请输入保存数量"/>
-        </el-form-item>
-
-        <el-form-item label="计量单位" prop="measuringUnit">
-          <el-select v-model="saveTemp.measuringUnit" class="filter-item" placeholder="请输入计量单位">
-            <el-option v-for="item in measuringUnitOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+        <el-form-item label="共享用途" prop="shareUse">
+          <!--          <el-input v-model="shareTemp.shareUse" placeholder="请输入共享用途"/>-->
+          <el-select v-model="shareTemp.shareUse" class="filter-item" placeholder="请输入共享用途">
+            <el-option v-for="item in shareUseOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
           </el-select>
         </el-form-item>
-
-        <el-form-item label="保存单位" prop="saveUnit">
-          <el-input v-model="saveTemp.saveUnit" placeholder="请输入保存单位"/>
+        <el-form-item label="共享份次" prop="shareNum">
+          <el-input v-model="shareTemp.shareNum" placeholder="请输入共享份次"/>
         </el-form-item>
-
-        <el-form-item label="保存库" prop="saveVault">
-          <el-input v-model="saveTemp.saveVault" placeholder="请输入保存库"/>
+        <el-form-item label="共享开始时间" prop="shareBeginTime">
+          <el-date-picker v-model="shareTemp.shareBeginTime" type="datetime" placeholder="请选择共享开始时间"
+                          style="width:100%"
+          />
         </el-form-item>
-
-        <el-form-item label="保存地点" prop="savePlace">
-          <el-input v-model="saveTemp.savePlace" placeholder="请输入保存地点"/>
-        </el-form-item>
-
-        <el-form-item label="入库年份" prop="warehousingYear">
-          <el-input v-model="saveTemp.warehousingYear" placeholder="请输入入库年份"/>
-        </el-form-item>
-
-        <el-form-item label="保存性质" prop="saveProperty">
-          <el-input v-model="saveTemp.saveProperty" placeholder="请输入保存性质"/>
-        </el-form-item>
-
-        <el-form-item label="资源描述" prop="resourceDescription">
-          <el-input v-model="saveTemp.resourceDescription" placeholder="请输入资源描述"/>
-        </el-form-item>
-
-        <el-form-item label="备注" prop="resourceRemark">
-          <el-input v-model="saveTemp.resourceRemark" placeholder="请输入备注"/>
-        </el-form-item>
-
-        <el-form-item label="种质图片" prop="germplasmImage">
-          <el-input v-model="saveTemp.germplasmImage" placeholder="请输入种质图片"/>
+        <el-form-item label="共享结束时间" prop="shareEndTime">
+          <el-date-picker v-model="shareTemp.shareEndTime" type="datetime" placeholder="请选择共享结束时间"
+                          style="width:100%"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogSaveVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="createSaveInfo()">
-          确认保存
+        <el-button type="primary" @click="createShareInfo()">
+          确认录入
         </el-button>
       </div>
-    </el-dialog>
 
+    </el-dialog>
   </div>
 </template>
 
 <script>
+
 import {
-  contradictCollection,
-  deleteCollection,
-  createCollection,
-  fetchCollection,
-  fetchCollectionListByPage,
-  fetchCollectionTotal,
-  updateCollection, createSave
-} from '@/api/collectInfo'
+  contradictEnter,
+  deleteEnter,
+  fetchEnter,
+  fetchEnterListByPage,
+  fetchEnterTotal,
+  updateEnter,
+  createShare
+} from '@/api/enterInfo'
+
+import {
+  contradictShare,
+  deleteShare,
+  fetchShare,
+  fetchShareListByPage,
+  fetchShareTotal,
+  updateShare,
+  loadInfo
+} from '@/api/shareInfo'
 
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import Da from 'element-ui/src/locale/lang/da'
+
+const shareUseOptions = [
+  { key: 1, display_name: '科学研究' },
+  { key: 2, display_name: '组织培养' },
+  { key: 3, display_name: '成份分析' },
+  { key: 4, display_name: '资源交换' },
+  { key: 5, display_name: '样品补充' },
+  { key: 6, display_name: '实验耗材' },
+  { key: 7, display_name: '信息交换' },
+]
+
+const shareUseKeyValue = shareUseOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
+
+const shareModeOptions = [
+  { key: 1, display_name: '全部共享' },
+  { key: 2, display_name: '部分共享' },
+  { key: 3, display_name: '信息共享' },
+  { key: 4, display_name: '实体共享' },
+]
+
+const shareModeKeyValue = shareModeOptions.reduce((acc, cur) => {
+  acc[cur.key] = cur.display_name
+  return acc
+}, {})
 
 const fruitTypeOptions = [
   { key: 1, display_name: '产胶作物' },
@@ -707,7 +474,7 @@ const mainPreferenceOptions = [
   { key: 4, display_name: '抗虫' },
   { key: 5, display_name: '抗逆' },
   { key: 6, display_name: '高校' },
-  { key: 7, display_name: '其他' },
+  { key: 7, display_name: '其他' }
 ]
 const mainPreferenceKeyValue = mainPreferenceOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -719,7 +486,7 @@ const measuringUnitOptions = [
   { key: 2, display_name: 'kg' },
   { key: 3, display_name: '斤' },
   { key: 4, display_name: '公斤' },
-  { key: 5, display_name: '株' },
+  { key: 5, display_name: '株' }
 ]
 const measuringUnitKeyValue = measuringUnitOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -732,10 +499,22 @@ export default {
   directives: { waves },
   computed: {
     fruitTypeCompute() {
-      return fruitTypeKeyValue[this.collectionTemp.type]
+      return fruitTypeKeyValue[this.enterTemp.type]
+    },
+    mainPreferenceCompute() {
+      return mainPreferenceKeyValue[this.saveTemp.type]
+    },
+    measuringUnitCompute() {
+      return measuringUnitKeyValue[this.saveTemp.measuringUnit]
     },
     saveTypeCompute() {
       return fruitTypeKeyValue[this.saveTemp.type]
+    },
+    enterTypeCompute() {
+      return fruitTypeKeyValue[this.enterTemp.type]
+    },
+    shareTypeCompute() {
+      return fruitTypeKeyValue[this.shareTemp.type]
     }
   },
   filters: {
@@ -762,6 +541,12 @@ export default {
     },
     measuringUnitFilter(type) {
       return measuringUnitKeyValue[type]
+    },
+    shareModeFilter(type) {
+      return shareModeKeyValue[type]
+    },
+    shareUseFilter(type) {
+      return shareUseKeyValue[type]
     },
 
     statusFilter(status) {
@@ -792,6 +577,8 @@ export default {
       collectMaterialTypeOptions,
       mainPreferenceOptions,
       measuringUnitOptions,
+      shareModeOptions,
+      shareUseOptions,
       tableKey: 0,
       list: null,
       total: 0,
@@ -812,58 +599,28 @@ export default {
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['待保存', '待录入', '待共享', '已共享'],
       showReviewer: false,
-      saveTemp: {
-        saveID: undefined,
+      enterTemp: {
+        enterID: undefined,
         type: undefined,
         name: undefined,
-        mainPreference:'',
-        preservationFacility:'',
-        germplasmType:'',
-        saveQuantity:'',
-        measuringUnit:'',
-        saveUnit:'',
-        saveVault:'',
-        savePlace:'',
-        warehousingYear:'',
-        saveProperty:'',
-        resourceDescription:'',
-        resourceRemark:'',
-        germplasmImage:''
+        certifier: '',
+        certifyOrg: '',
+        certifyPlace: '',
+        certifyYear: '',
+        operationRange: '',
+        enterRemark: ''
       },
-
-      collectionTemp: {
-        collectID: undefined,
-        type: '',
-        name: '',
-        germplasmName: '',
-        germplasmNameEn: '',
-        sectionName: '',
-        genericName: '',
-        scientificName: '',
-        resourceType: '',
-        collectMethod: '',
-        germplasmSource: '',
-        sourceCountry: '',
-        sourceProvince: '',
-        source: '',
-        sourceOrg: '',
-        originCountry: '',
-        originPlace: '',
-        collectPlaceLongitude: '',
-        collectPlaceLatitude: '',
-        collectPlaceAltitude: '',
-        collectPlaceSoilType: '',
-        collectPlaceEcologyType: '',
-        collectMaterialType: '',
-        collectPeople: '',
-        collectUnit: '',
-        collectTime: new Date(),
-        speciesName: '',
-        image: '',
-        collectRemark: '',
-        collectStatus:'',
-        isLoaded:'',
-        isContradicted:'',
+      shareTemp: {
+        shareID: undefined,
+        type: undefined,
+        name: undefined,
+        shareObj: '',
+        contactInfo: '',
+        shareMode: '',
+        shareUse: '',
+        shareNum: '',
+        shareBeginTime: '',
+        shareEndTime: ''
       },
       dialogRefuseVisible: false,
       refuseID: undefined,
@@ -874,35 +631,26 @@ export default {
       },
       dialogCollectionVisible: false,
       dialogCreateVisible: false,
-      collectionInfo: {},
 
       dialogSaveVisible: false,
       saveInfo: {},
-
-      saveRules:{
-        saveID: [{ required: true, message: 'saveID is required', trigger: 'blur' }],
-        mainPreference: [{ required: true, message: 'mainPreference is required', trigger: 'blur' }]
+      enterInfo: {},
+      shareInfo: {},
+      enterRules: {
+        enterID: [{ required: true, message: 'enterID is required', trigger: 'blur' }],
+        certifier: [{ required: true, message: 'certifier is required', trigger: 'blur' }],
+        certifyOrg: [{ required: true, message: 'certifyOrg is required', trigger: 'blur' }]
       },
 
-      rules: {
-        collectID: [{ required: true, message: 'collectID is required', trigger: 'blur' }],
-        type: [{ required: true, message: 'type is required', trigger: 'blur' }],
-        name: [{ required: true, message: 'name is required', trigger: 'blur' }],
-        germplasmName: [{ required: true, message: 'germplasm is required', trigger: 'blur' }],
-        genericName: [{ required: true, message: 'genericName is required', trigger: 'blur' }],
-        collectMethod: [{ required: true, message: 'collectMethod is required', trigger: 'blur' }],
-        germplasmSource: [{ required: true, message: 'germplasmsource is required', trigger: 'blur' }],
-        sourceCountry: [{ required: true, message: 'sourceCountry is required', trigger: 'blur' }],
-        sourceProvince: [{ required: true, message: 'sourceProvince is required', trigger: 'blur' }],
-        sourceOrg: [{ required: true, message: 'sourceOrg is required', trigger: 'blur' }],
-        originCountry: [{ required: true, message: 'originCountry is required', trigger: 'blur' }],
-        collectPlaceLatitude: [{ required: true, message: 'Latitude is required', trigger: 'blur' }],
-        collectPlaceLongitude: [{ required: true, message: 'Longitude is required', trigger: 'blur' }],
-        collectPlaceAltitude: [{ required: true, message: 'Altitude is required', trigger: 'blur' }],
-        collectPlaceSoilType: [{ required: true, message: 'soilType is required', trigger: 'blur' }],
-        collectPeople: [{ required: true, message: 'collectPeople is required', trigger: 'blur' }],
-        collectUnit: [{ required: true, message: 'collectUnit is required', trigger: 'blur' }]
+      shareRules: {
+        shareID: [{ required: true, message: 'shareID is required', trigger: 'blur' }],
+        contactInfo: [{ required: true, message: 'contactInfo is required', trigger: 'blur' }],
+        shareBeginTime: [{ required: true, message: 'shareBeginTime is required', trigger: 'blur' }],
+        shareEndTime: [{ required: true, message: 'shareEndTime is required', trigger: 'blur' }],
+        shareNum: [{ required: true, message: 'shareNum is required', trigger: 'blur' }],
+        shareUse: [{ required: true, message: 'shareUse is required', trigger: 'blur' }],
       },
+
       downloadLoading: false
     }
   },
@@ -911,6 +659,11 @@ export default {
     this.getList()
   },
   methods: {
+    formatYear(value) {
+      var dt = new Date(value)
+      let year = dt.getFullYear()
+      return `${year}`
+    },
     formatDate(value) {
       var dt = new Date(value)
       let year = dt.getFullYear()
@@ -922,18 +675,18 @@ export default {
       return `${year}-${month}-${date} ${hour}:${minute}:${second}`
     },
     viewDetails(id) {
-      this.handleFetchCollection(id)
+      this.handleFetchEnter(id)
     },
 
     getList() {
       this.listLoading = true
-      fetchCollectionListByPage(this.listQuery.page, this.listQuery.limit).then(response => {
+      fetchShareListByPage(this.listQuery.page, this.listQuery.limit).then(response => {
         this.list = response.data
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
       })
-      fetchCollectionTotal().then(response => {
+      fetchShareTotal().then(response => {
         this.total = response.data
         setTimeout(() => {
           this.listLoading = false
@@ -961,48 +714,46 @@ export default {
       this.handleFilter()
     },
 
-    resetSaveTemp() {
-      this.saveTemp = {
-        saveID: undefined,
+    resetShareTemp() {
+      this.shareTemp = {
+        shareID: undefined,
         type: undefined,
         name: undefined,
-        mainPreference:'',
-        preservationFacility:'',
-        germplasmType:'',
-        saveQuantity:'',
-        measuringUnit:'',
-        saveUnit:'',
-        saveVault:'',
-        savePlace:'',
-        warehousingYear:'',
-        saveProperty:'',
-        resourceDescription:'',
-        resourceRemark:'',
-        germplasmImage:''
+        shareObj: '',
+        contactInfo: '',
+        shareMode: '',
+        shareUse: '',
+        shareNum: '',
+        shareBeginTime: '',
+        shareEndTime: ''
       }
     },
-    handleCreateSaveInfo(data) {
-      this.resetSaveTemp()
-      this.collectionTemp = Object.assign({}, data) // copy obj
-      this.saveTemp.saveID = data.collectID
-      this.saveTemp.type = data.type
-      this.saveTemp.name = data.name
+    handleCreateShareInfo(data) {
+      this.resetShareTemp()
+      this.enterTemp = Object.assign({}, data) // copy obj
+      this.shareTemp.shareID = data.enterID
+      // console.log(data.enterID)
+      this.shareTemp.type = data.type
+      this.shareTemp.name = data.name
 
       this.dialogSaveVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createSaveInfo() {
-      // console.log(this.collectionTemp.collectTime)
+
+    createShareInfo() {
       this.$refs['dataForm'].validate((valid) => {
         // console.log(valid)
         if (valid) {
-          createSave(this.saveTemp).then(() => {
-            const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
-            this.collectionTemp.isContradict = 0
-            this.collectionTemp.status = 1
-            this.list.splice(index, 1, this.collectionTemp)
+          // this.enterTemp.certifyYear = this.formatYear(this.enterTemp.certifyYear)
+          this.shareTemp.shareBeginTime = this.formatDate(this.shareTemp.shareBeginTime)
+          this.shareTemp.shareEndTime = this.formatDate(this.shareTemp.shareEndTime)
+          createShare(this.shareTemp).then(() => {
+            const index = this.list.findIndex(v => v.enterID === this.shareTemp.shareID)
+            this.enterTemp.isContradict = 0
+            this.enterTemp.status = 3
+            this.list.splice(index, 1, this.enterTemp)
             this.dialogSaveVisible = false
             this.$notify({
               title: 'Success',
@@ -1015,96 +766,29 @@ export default {
       })
     },
 
-    resetCollectionTemp() {
-      this.collectionTemp = {
-        collectID: undefined,
-        type: '',
-        name: '',
-        germplasmName: '',
-        germplasmNameEn: '',
-        sectionName: '',
-        genericName: '',
-        scientificName: '',
-        resourceType: '',
-        collectMethod: '',
-        germplasmSource: '',
-        sourceCountry: '',
-        sourceProvince: '',
-        source: '',
-        sourceOrg: '',
-        originCountry: '',
-        originPlace: '',
-        collectPlaceLongitude: '',
-        collectPlaceLatitude: '',
-        collectPlaceAltitude: '',
-        collectPlaceSoilType: '',
-        collectPlaceEcologyType: '',
-        collectMaterialType: '',
-        collectPeople: '',
-        collectUnit: '',
-        collectTime: new Date(),
-        speciesName: '',
-        image: '',
-        collectRemark: '',
-        collectStatus:'',
-        isLoaded:'',
-        isContradicted:'',
-      }
-    },
-
-    handleCreateCollectionInfo() {
-      this.resetCollectionTemp()
-      this.dialogStatus = 'create'
-      this.dialogCreateVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
-    },
-    createCollectionInfo() {
-      this.collectionTemp.collectTime = this.formatDate(this.collectionTemp.collectTime)
-      this.collectionTemp.collectStatus = 0
-      this.collectionTemp.status = 0
-      this.collectionTemp.isLoaded = 0
-      this.collectionTemp.isContradicted = 0
-      // console.log(this.collectionTemp.collectTime)
-      this.$refs['dataForm'].validate((valid) => {
-        // console.log(valid)
-        if (valid) {
-          createCollection(this.collectionTemp).then(() => {
-            this.list.unshift(this.collectionTemp)
-            this.dialogCreateVisible = false
-            this.$notify({
-              title: 'Success',
-              message: 'Created Successfully',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
-
     handleUpdate(row) {
-      this.collectionTemp = Object.assign({}, row) // copy obj
-      this.collectionTemp.collectTime = new Date()
+      // console.log('--->' + row.saveID)
+      this.shareTemp = Object.assign({}, row) // copy obj
+      this.shareTemp.shareBeginTime = new Date()
+      this.shareTemp.shareEndTime = new Date()
       this.dialogStatus = 'update'
       this.dialogCreateVisible = true
       this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+        this.$refs['dataForm2'].clearValidate()
       })
     },
 
-    updateCollectionInfo() {
-      this.collectionTemp.collectTime = this.formatDate(this.collectionTemp.collectTime)
-      // console.log(this.collectionTemp.collectTime)
-      this.$refs['dataForm'].validate((valid) => {
+    updateEnterInfo() {
+      this.shareTemp.shareBeginTime = this.formatYear(this.shareTemp.shareBeginTime)
+      this.shareTemp.shareEndTime = this.formatYear(this.shareTemp.shareEndTime)
+      this.$refs['dataForm2'].validate((valid) => {
         // console.log(valid)
         if (valid) {
-          const tempData = Object.assign({}, this.collectionTemp)
-          updateCollection(tempData).then(() => {
-            const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
-            this.collectionTemp.isContradict = 0
-            this.list.splice(index, 1, this.collectionTemp)
+          const tempData = Object.assign({}, this.shareTemp)
+          updateShare(tempData).then(() => {
+            const index = this.list.findIndex(v => v.shareID === this.shareTemp.shareID)
+            this.shareTemp.isContradict = 0
+            this.list.splice(index, 1, this.shareTemp)
             this.dialogCreateVisible = false
             this.$notify({
               title: 'Success',
@@ -1117,9 +801,9 @@ export default {
       })
     },
 
-    handleFetchCollection(id) {
-      fetchCollection(id).then(response => {
-        this.collectionInfo = response.data
+    handleFetchEnter(id) {
+      fetchShare(id).then(response => {
+        this.shareInfo = response.data
         // console.log(response.data)
         this.dialogCollectionVisible = true
       })
@@ -1132,9 +816,9 @@ export default {
         type: 'warning'
       })
         .then(async() => {
-          const index = this.list.findIndex(v => v.collectID === row.collectID)
+          const index = this.list.findIndex(v => v.shareID === row.shareID)
           this.list.splice(index, 1)
-          deleteCollection(row.collectID)
+          deleteShare(row.shareID)
           this.$notify({
             title: 'Success',
             message: '删除成功',
@@ -1147,9 +831,10 @@ export default {
         })
     },
 
-    handleRefuse(data) {
+    handleRefuse(row) {
       this.dialogRefuseVisible = true
-      this.refuseID = data
+      this.shareTemp = row
+      this.refuseID = row.shareID
     },
 
     cancelRefuse() {
@@ -1157,17 +842,11 @@ export default {
       this.refuseID = undefined
     },
 
-    refuseCollect() {
-      // this.$confirm('确定反驳采集信息吗', '警告', {
-      //   confirmButtonText: '确定',
-      //   cancelButtonText: '取消',
-      //   type: 'warning'
-      // }).then(async() => {
-      const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
-      this.collectionTemp.isContradict = 1
-      this.collectionTemp.status = 0
-      this.list.splice(index, 1, this.collectionTemp)
-      contradictCollection(this.refuseID)
+    refuseEnter() {
+      const index = this.list.findIndex(v => v.shareID === this.refuseID)
+      this.shareTemp.isContradict = 1
+      this.list.splice(index, 1, this.shareTemp)
+      contradictShare(this.refuseID)
         .catch(err => {
           console.error(err)
         })
@@ -1180,15 +859,12 @@ export default {
       })
 
     },
-    save(){
-
-    },
 
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['CollectID', 'Type', 'Name', 'GermplasmName', 'GermplasmNameEn', 'SectionName', 'GenericName', 'ScientificName', 'ResourceType', 'CollectMethod', 'GermplasmSource', 'SourceCountry', 'SourceProvince', 'Source', 'SourceOrg', 'OriginCountry', 'OriginPlace', 'CollectPlaceLongitude', 'CollectPlaceLatitude', 'CollectPlaceAltitude', 'CollectPlaceSoilType', 'CollectPlaceEcologyType', 'CollectMaterialType', 'CollectPeople', 'CollectUnit', 'CollectTime', 'SpeciesName', 'Image', 'CollectRemark']
-        const filterVal = ['collectID', 'type', 'name', 'germplasmName', 'germplasmNameEn', 'sectionName', 'genericName', 'scientificName', 'resourceType', 'collectMethod', 'germplasmSource', 'sourceCountry', 'sourceProvince', 'source', 'sourceOrg', 'originCountry', 'originPlace', 'collectPlaceLongitude', 'collectPlaceLatitude', 'collectPlaceAltitude', 'collectPlaceSoilType', 'collectPlaceEcologyType', 'collectMaterialType', 'collectPeople', 'collectUnit', 'collectTime', 'speciesName', 'image', 'collectRemark']
+        const tHeader = ['ShareID', 'Type', 'Name', 'ShareObj', 'ContactInfo', 'ShareMode', 'ShareUse', 'ShareNum', 'ShareBeginTime', 'ShareEndTime']
+        const filterVal = ['shareID', 'type', 'name', 'shareObj', 'contactInfo', 'shareMode', 'shareUse', 'shareNum', 'shareBeginTime', 'shareEndTime']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,

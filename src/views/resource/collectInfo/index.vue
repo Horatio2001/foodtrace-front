@@ -1003,7 +1003,11 @@ export default {
     },
     createSaveInfo() {
       // console.log(this.collectionTemp.collectTime)
-      this.saveTemp.warehousingYear = this.formatYear(this.saveTemp.warehousingYear)
+      if (this.saveTemp.warehousingYear !== '') {
+        this.saveTemp.warehousingYear = this.formatYear(this.saveTemp.warehousingYear)
+      } else {
+        this.saveTemp.warehousingYear = ''
+      }
       this.$refs['dataForm'].validate((valid) => {
         // console.log(valid)
         if (valid) {
@@ -1074,7 +1078,7 @@ export default {
       this.collectionTemp.collectStatus = 0
       this.collectionTemp.status = 0
       this.collectionTemp.isLoaded = 0
-      this.collectionTemp.isContradicted = 0
+      this.collectionTemp.isContradict = 0
       // console.log(this.collectionTemp.collectTime)
       this.$refs['dataForm'].validate((valid) => {
         // console.log(valid)

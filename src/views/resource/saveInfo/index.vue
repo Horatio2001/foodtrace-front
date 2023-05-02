@@ -35,8 +35,8 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column label="收集号" prop="collectID" sortable="custom" align="center" width="89"
-                       :class-name="getSortClass('collectID')"
+      <el-table-column label="收集号" prop="saveID" sortable="custom" align="center" width="89"
+                       :class-name="getSortClass('saveID')"
       >
         <template slot-scope="{row}">
           <span>{{ row.saveID }}</span>
@@ -195,7 +195,7 @@
         </div>
         <div class="detail-row">
           <div class="detail-label">主要特征:</div>
-          <div class="detail-value">{{ this.saveInfo.mainPreference }}</div>
+          <div class="detail-value">{{ this.saveInfo.mainPreference | mainPreferenceFilter }}</div>
         </div>
         <div class="detail-row">
           <div class="detail-label">主要用途:</div>
@@ -753,7 +753,7 @@ export default {
     },
 
     resetEnterTemp() {
-      this.saveTemp = {
+      this.enterTemp = {
         enterID: undefined,
         type: undefined,
         name: undefined,
@@ -782,7 +782,9 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         // console.log(valid)
         if (valid) {
-          this.enterTemp.certifyYear = this.formatYear(this.enterTemp.certifyYear)
+          if (this.enterTemp.certifyYear !== '') {
+            this.enterTemp.certifyYear = this.formatYear(this.enterTemp.certifyYear)
+          }
           createEnter(this.enterTemp).then(() => {
             const index = this.list.findIndex(v => v.saveID === this.enterTemp.enterID)
             this.saveTemp.isContradict = 0
