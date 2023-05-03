@@ -44,11 +44,13 @@
       </el-table-column>
       <el-table-column label="流程状态" prop="status" class-name="status-col" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
+          <el-tag :type="row.status | statusFilter" :effect="row | effectFilter">
             <span v-if="row.status === 0">待保存</span>
             <span v-else-if="row.status === 1">待录入</span>
             <span v-else-if="row.status === 2">待共享</span>
-            <span v-else-if="row.status === 3">已共享</span>
+            <span v-else-if="row.status === 3 && row.isLoaded === 0">已共享</span>
+            <span v-else-if="row.status === 3 && row.isLoaded === 1 && row.isCertified === 0">尚无证书</span>
+            <span v-else-if="row.status === 3 && row.isLoaded === 1 && row.isCertified === 1">已存证</span>
           </el-tag>
         </template>
       </el-table-column>
@@ -94,7 +96,7 @@
 
       <el-table-column label="操作状态" prop="idContradict" class-name="status-col" width="120">
         <template slot-scope="{row}">
-          <el-tag :type="row.isContradict | contadictFilter">
+          <el-tag :type="row.isContradict | contadictFilter" :effect="row | loadedFilter">
             <span v-if="row.isLoaded === 1">已上链</span>
             <span v-else-if="row.isContradict === 0">正常</span>
             <span v-else-if="row.isContradict === 1">反驳中</span>
@@ -146,8 +148,8 @@
                 @pagination="getList"
     />
 
-    <el-dialog :visible.sync="dialogCollectionVisible" title="录入信息详情" :close-on-click-modal="false"
-               :show-close="false"
+    <el-dialog :visible.sync="dialogCollectionVisible" title="录入信息详情" :close-on-click-modal="true"
+               :show-close="true"
                class="collection-dialog"
     >
       <div class="detail-table">
@@ -508,6 +510,21 @@ export default {
     }
   },
   filters: {
+    effectFilter(row) {
+      const statusMap = {
+        0: 'light',
+        1: 'dark',
+      }
+      return statusMap[row.isLoaded]
+    },
+
+    loadedFilter(row) {
+      const statusMap = {
+        0: 'light',
+        1: 'dark',
+      }
+      return statusMap[row.isLoaded]
+    },
     fruitTypeFilter(type) {
       return fruitTypeKeyValue[type]
     },
