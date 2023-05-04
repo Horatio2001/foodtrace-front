@@ -169,7 +169,9 @@
             <el-button type="primary" size="small" @click="viewDetails(row.collectID)">
               查看详情
             </el-button>
-            <el-button v-if="row.isLoaded === 0 && row.status === 0" type="primary" size="small" @click="handleUpdate(row)">
+            <el-button v-if="row.isLoaded === 0 && row.status === 0" type="primary" size="small"
+                       @click="handleUpdate(row)"
+            >
               修改
             </el-button>
             <el-button v-if="row.isLoaded === 0" type="primary" size="small" @click="handleDelete(row)">
@@ -471,9 +473,47 @@
                           style="width:100%"
           />
         </el-form-item>
-        <el-form-item label="原生境图片" prop="image">
-          <el-input v-model="collectionTemp.image" placeholder="请输入原生境图片"/>
-        </el-form-item>
+
+        <div class="Post_formbox ">
+          <el-form-item label="原生境图片" prop="image">
+            <!--          <el-input v-model="collectionTemp.image" placeholder="请输入原生境图片"/>-->
+            <!--          todo-->
+            <div class="uploadImage">
+              <el-upload
+                action="#"
+                accept=".jpg"
+                :limit="1"
+                :before-upload="beforeUpload"
+                :on-change="getLocalImg"
+                list-type="picture-card"
+                v-show="!collectPic"
+              >
+                <div class="need_upload">
+                  <i slot="default" class="el-icon-plus"></i>
+                </div>
+              </el-upload>
+              <transition name="el-zoom-in-top">
+                <div v-show="collectPic" class="good_img">
+                  <img :src="collectPic"/>
+                  <i class="el-icon-delete-solid" @click="removePic"></i>
+                </div>
+              </transition>
+              <transition name="el-fade-in">
+                <el-alert
+                  title="文件太大了"
+                  type="error"
+                  description="请上传2M以下的图片"
+                  show-icon
+                  v-show="picoversizeWarning"
+                  @close="closeAlert1"
+                >
+                </el-alert>
+              </transition>
+            </div>
+          </el-form-item>
+        </div>
+
+
         <el-form-item label="项目归口" prop="speciesName">
           <el-input v-model="collectionTemp.speciesName" placeholder="请输入项目归口"/>
         </el-form-item>
@@ -516,7 +556,7 @@
       >
 
         <el-form-item label="收集号" prop="collectID">
-            <el-input :disabled="true" :readonly="true" v-model="saveTemp.saveID" placeholder="请输入收集号"/>
+          <el-input :disabled="true" :readonly="true" v-model="saveTemp.saveID" placeholder="请输入收集号"/>
         </el-form-item>
 
         <el-form-item label="作物类别" prop="type">
@@ -529,7 +569,9 @@
 
         <el-form-item label="主要特征" prop="mainPreference">
           <el-select v-model="saveTemp.mainPreference" class="filter-item" placeholder="请输入主要特征">
-            <el-option v-for="item in mainPreferenceOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+            <el-option v-for="item in mainPreferenceOptions" :key="item.key" :label="item.display_name"
+                       :value="item.key"
+            />
           </el-select>
         </el-form-item>
 
@@ -547,7 +589,9 @@
 
         <el-form-item label="计量单位" prop="measuringUnit">
           <el-select v-model="saveTemp.measuringUnit" class="filter-item" placeholder="请输入计量单位">
-            <el-option v-for="item in measuringUnitOptions" :key="item.key" :label="item.display_name" :value="item.key"/>
+            <el-option v-for="item in measuringUnitOptions" :key="item.key" :label="item.display_name"
+                       :value="item.key"
+            />
           </el-select>
         </el-form-item>
 
@@ -564,7 +608,7 @@
         </el-form-item>
 
         <el-form-item label="入库年份" prop="warehousingYear">
-<!--          <el-input v-model="saveTemp.warehousingYear" placeholder="请输入入库年份"/>-->
+          <!--          <el-input v-model="saveTemp.warehousingYear" placeholder="请输入入库年份"/>-->
           <el-date-picker v-model="saveTemp.warehousingYear" type="year" placeholder="请输入入库年份"
                           style="width:100%"
           />
@@ -613,7 +657,7 @@ import {
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import Da from 'element-ui/src/locale/lang/da'
+import axios from 'axios'
 
 const fruitTypeOptions = [
   { key: 1, display_name: '产胶作物' },
@@ -712,7 +756,7 @@ const mainPreferenceOptions = [
   { key: 4, display_name: '抗虫' },
   { key: 5, display_name: '抗逆' },
   { key: 6, display_name: '高校' },
-  { key: 7, display_name: '其他' },
+  { key: 7, display_name: '其他' }
 ]
 const mainPreferenceKeyValue = mainPreferenceOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -724,7 +768,7 @@ const measuringUnitOptions = [
   { key: 2, display_name: 'kg' },
   { key: 3, display_name: '斤' },
   { key: 4, display_name: '公斤' },
-  { key: 5, display_name: '株' },
+  { key: 5, display_name: '株' }
 ]
 const measuringUnitKeyValue = measuringUnitOptions.reduce((acc, cur) => {
   acc[cur.key] = cur.display_name
@@ -788,7 +832,7 @@ export default {
     effectFilter(row) {
       const statusMap = {
         0: 'light',
-        1: 'dark',
+        1: 'dark'
       }
       return statusMap[row.isLoaded]
     },
@@ -796,14 +840,19 @@ export default {
     loadedFilter(row) {
       const statusMap = {
         0: 'light',
-        1: 'dark',
+        1: 'dark'
       }
       return statusMap[row.isLoaded]
-    },
+    }
 
   },
   data() {
     return {
+      collectFile: null,
+      formData: new FormData(),
+      collectPic: null,
+      picoversizeWarning: false,
+
       fruitTypeOptions,
       resourceTypeOptions,
       collectMethodOptions,
@@ -836,19 +885,19 @@ export default {
         saveID: undefined,
         type: undefined,
         name: undefined,
-        mainPreference:'',
-        preservationFacility:'',
-        germplasmType:'',
-        saveQuantity:'',
-        measuringUnit:'',
-        saveUnit:'',
-        saveVault:'',
-        savePlace:'',
-        warehousingYear:'',
-        saveProperty:'',
-        resourceDescription:'',
-        resourceRemark:'',
-        germplasmImage:''
+        mainPreference: '',
+        preservationFacility: '',
+        germplasmType: '',
+        saveQuantity: '',
+        measuringUnit: '',
+        saveUnit: '',
+        saveVault: '',
+        savePlace: '',
+        warehousingYear: '',
+        saveProperty: '',
+        resourceDescription: '',
+        resourceRemark: '',
+        germplasmImage: ''
       },
 
       collectionTemp: {
@@ -881,9 +930,9 @@ export default {
         speciesName: '',
         image: '',
         collectRemark: '',
-        collectStatus:'',
-        isLoaded:'',
-        isContradicted:'',
+        collectStatus: '',
+        isLoaded: '',
+        isContradicted: ''
       },
       dialogRefuseVisible: false,
       refuseID: undefined,
@@ -899,7 +948,7 @@ export default {
       dialogSaveVisible: false,
       saveInfo: {},
 
-      saveRules:{
+      saveRules: {
         saveID: [{ required: true, message: 'saveID is required', trigger: 'blur' }],
         mainPreference: [{ required: true, message: 'mainPreference is required', trigger: 'blur' }]
       },
@@ -931,6 +980,52 @@ export default {
     this.getList()
   },
   methods: {
+    beforeUpload(file) {
+      //限制图片大小为2M以下
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (isLt2M) {
+        this.formData.append('Image', file)
+        this.collectFile = file
+        this.nopicWarning = false
+      } else {
+        this.picoversizeWarning = true
+      }
+      return false//禁止elementUI的组件自动上传
+    },
+    getLocalImg(event) {
+      // 获取上传图片的本地url，用于上传前的本地预览
+      const isLt2M = event.size / 1024 / 1024 < 2
+      if (isLt2M) {
+        let url = ''
+        if (window.createObjectURL !== undefined) {
+          url = window.createObjectURL(event.raw)
+        } else if (window.URL !== undefined) {
+          url = window.URL.createObjectURL(event.raw)
+        } else if (window.webkitURL !== undefined) {
+          url = window.webkitURL.createObjectURL(event.raw)
+        }
+        // var reader = new FileReader();
+        // reader.readAsDataURL(event.raw);
+        // reader.onload = function(e){
+        //   this.result
+        //   console.log(this.result)
+        //   this.collectionTemp.image = this.result; //base64编码
+        // }
+
+        this.collectPic = url
+        this.picoversizeWarning = false
+      }
+    },
+    removePic() {
+      // this.form.goodpic=null;
+      this.formData.delete('Image')
+      this.collectFile = null
+      this.collectPic = null
+    },
+    closeAlert1() {
+      this.picoversizeWarning = false
+    },
+
     formatYear(value) {
       var dt = new Date(value)
       let year = dt.getFullYear()
@@ -991,19 +1086,19 @@ export default {
         saveID: undefined,
         type: undefined,
         name: undefined,
-        mainPreference:'',
-        preservationFacility:'',
-        germplasmType:'',
-        saveQuantity:'',
-        measuringUnit:'',
-        saveUnit:'',
-        saveVault:'',
-        savePlace:'',
-        warehousingYear:'',
-        saveProperty:'',
-        resourceDescription:'',
-        resourceRemark:'',
-        germplasmImage:''
+        mainPreference: '',
+        preservationFacility: '',
+        germplasmType: '',
+        saveQuantity: '',
+        measuringUnit: '',
+        saveUnit: '',
+        saveVault: '',
+        savePlace: '',
+        warehousingYear: '',
+        saveProperty: '',
+        resourceDescription: '',
+        resourceRemark: '',
+        germplasmImage: ''
       }
     },
     handleCreateSaveInfo(data) {
@@ -1076,9 +1171,9 @@ export default {
         speciesName: '',
         image: '',
         collectRemark: '',
-        collectStatus:'',
-        isLoaded:'',
-        isContradicted:'',
+        collectStatus: '',
+        isLoaded: '',
+        isContradicted: ''
       }
     },
 
@@ -1100,9 +1195,30 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         // console.log(valid)
         if (valid) {
-          createCollection(this.collectionTemp).then(() => {
-            this.list.unshift(this.collectionTemp)
-            this.dialogCreateVisible = false
+          const formData = new FormData();
+          if (this.collectFile !== null) {
+            formData.append('Image', this.collectFile)
+          }
+          const data = this.collectionTemp
+          for (const key in data) {
+            if (key === 'collectStatus' || key === 'isLoaded' || key === 'isContradicted' || key === 'image') {
+              continue
+            }
+            if (data.hasOwnProperty(key) && data[key] !== '') {
+              formData.append(key.charAt(0).toUpperCase() + key.slice(1), data[key])
+            }
+          }
+
+          axios.post('http://101.43.206.180:8083/Info/AddCollectInfoInSql',formData,{
+            headers:{
+              'Content-Type':'multipart/form-data'
+            }
+          }).then(() => {
+            const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
+            this.collectionTemp.isContradict = 0
+            this.collectionTemp.status = 1
+            this.list.splice(index, 1, this.collectionTemp)
+            this.dialogSaveVisible = false
             this.$notify({
               title: 'Success',
               message: 'Created Successfully',
@@ -1210,7 +1326,7 @@ export default {
       })
 
     },
-    save(){
+    save() {
 
     },
 
@@ -1248,6 +1364,52 @@ export default {
 
 
 <style scoped>
+
+.Post_formbox .uploadImage {
+  margin-bottom: 20px;
+}
+
+.Post_formbox .good_img {
+  position: relative;
+  width: 90%;
+  height: 360px;
+  background-color: white;
+  box-shadow: 0 10px 9px 0 rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.Post_formbox .good_img img {
+  max-height: 90%;
+  max-width: 95%;
+  overflow: hidden;
+  /*margin: 3% auto;*/
+}
+
+.Post_formbox .good_img i {
+  display: none;
+  position: absolute;
+  float: left;
+  font-size: 50px;
+  color: white;
+}
+
+.Post_formbox .good_img:hover {
+  box-shadow: 0 10px 9px 0 rgba(0, 0, 0, 0.4);
+}
+
+.Post_formbox .good_img:hover img {
+  filter: brightness(40%);
+}
+
+.Post_formbox .good_img:hover i {
+  display: block;
+  cursor: pointer;
+}
+
 .buttons-row {
   display: flex;
   justify-content: center;
