@@ -216,10 +216,7 @@
           <div class="detail-label">收集时间:</div>
           <div class="detail-value">{{ formatDate(this.collectInfo.collect_time) }}</div>
         </div>
-        <div class="detail-row">
-          <div class="detail-label">原生境图片:</div>
-          <div class="detail-value">{{ this.collectInfo.image }}</div>
-        </div>
+
         <div class="detail-row">
           <div class="detail-label">项目归口:</div>
           <div class="detail-value">{{ this.collectInfo.species_name }}</div>
@@ -276,10 +273,6 @@
         <div class="detail-row">
           <div class="detail-label">保存性质:</div>
           <div class="detail-value">{{ this.saveInfo.save_property }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">种质图片:</div>
-          <div class="detail-value">{{ this.saveInfo.germplasm_image }}</div>
         </div>
         <div class="detail-row">
           <div class="detail-label">资源描述:</div>

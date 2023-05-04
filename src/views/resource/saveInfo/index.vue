@@ -55,7 +55,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="作物类别" prop="type" align="center" width="130">
+      <el-table-column label="作物类别" prop="type" align="center" width="100">
         <template slot-scope="{row}">
           <span>
             {{ row.type | fruitTypeFilter }}
@@ -118,10 +118,10 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="种质图片" prop="GermplasmImage" align="center" width="100">
+      <el-table-column label="种质图片" prop="GermplasmImage" align="center" width="160">
         <template slot-scope="{row}">
           <span>
-            {{ row.germplasmImage }}
+            <img width="135px" height="140px" :src="'http://101.43.206.180' + row.germplasmImage">
           </span>
         </template>
       </el-table-column>
@@ -137,7 +137,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="操作员" prop="type" sortable="custom" align="center" width="100">
+      <el-table-column label="操作员" prop="type" sortable="custom" align="center" width="90">
         <template slot-scope="{row}">
           <span>
             admin
@@ -242,7 +242,9 @@
         </div>
         <div class="detail-row">
           <div class="detail-label">种质图片:</div>
-          <div class="detail-value">{{ this.saveInfo.germplasmImage }}</div>
+          <div class="detail-value">
+            <img width="135px" height="140px" :src="'http://101.43.206.180' + this.saveInfo.germplasmImage">
+          </div>
         </div>
         <div class="detail-row">
           <div class="detail-label">操作员:</div>
@@ -326,9 +328,49 @@
         <el-form-item label="保存性质" prop="saveProperty">
           <el-input v-model="saveTemp.saveProperty" placeholder="请输入保存性质"/>
         </el-form-item>
-        <el-form-item label="种质图片" prop="germplasmImage">
-          <el-input v-model="saveTemp.germplasmImage" placeholder="请输入种质图片"/>
-        </el-form-item>
+
+
+        <div class="Post_formbox ">
+          <el-form-item label="种质图片" prop="image">
+            <div class="uploadImage">
+              <el-upload
+                action="#"
+                accept=""
+                :limit="1"
+                :before-upload="beforeUpload1"
+                :on-change="getLocalImg1"
+                list-type="picture-card"
+                v-show="!savePic"
+              >
+                <div class="need_upload">
+                  <i slot="default" class="el-icon-plus"></i>
+                </div>
+              </el-upload>
+              <transition name="el-zoom-in-top">
+                <div v-show="savePic" class="good_img">
+                  <img :src="savePic"/>
+                  <i class="el-icon-delete-solid" @click="removePic1"></i>
+                </div>
+              </transition>
+              <transition name="el-fade-in">
+                <el-alert
+                  title="文件太大了"
+                  type="error"
+                  description="请上传2M以下的图片"
+                  show-icon
+                  v-show="picoversizeWarning"
+                  @close="closeAlert11"
+                >
+                </el-alert>
+              </transition>
+            </div>
+          </el-form-item>
+        </div>
+<!--        <el-form-item label="种质图片" prop="germplasmImage">-->
+<!--          <el-input v-model="saveTemp.germplasmImage" placeholder="请输入种质图片"/>-->
+<!--        </el-form-item>-->
+
+
         <el-form-item label="操作员" prop="operator">
           <span>admin</span>
         </el-form-item>
@@ -427,6 +469,7 @@ import {
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
+import axios from 'axios'
 
 const fruitTypeOptions = [
   { key: 1, display_name: '产胶作物' },
@@ -626,6 +669,12 @@ export default {
   },
   data() {
     return {
+      collectFile: null,
+      saveFile:null,
+      formData: new FormData(),
+      collectPic: null,
+      savePic:null,
+      picoversizeWarning: false,
       fruitTypeOptions,
       resourceTypeOptions,
       collectMethodOptions,
@@ -715,6 +764,44 @@ export default {
     this.getList()
   },
   methods: {
+    beforeUpload1(file) {
+      //限制图片大小为2M以下
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (isLt2M) {
+        this.formData.append('Image', file)
+        this.saveFile = file
+        this.nopicWarning = false
+      } else {
+        this.picoversizeWarning = true
+      }
+      return false//禁止elementUI的组件自动上传
+    },
+    getLocalImg1(event) {
+      // 获取上传图片的本地url，用于上传前的本地预览
+      const isLt2M = event.size / 1024 / 1024 < 2
+      if (isLt2M) {
+        let url = ''
+        if (window.createObjectURL !== undefined) {
+          url = window.createObjectURL(event.raw)
+        } else if (window.URL !== undefined) {
+          url = window.URL.createObjectURL(event.raw)
+        } else if (window.webkitURL !== undefined) {
+          url = window.webkitURL.createObjectURL(event.raw)
+        }
+        this.savePic = url
+        this.picoversizeWarning = false
+      }
+    },
+    removePic1() {
+      // this.form.goodpic=null;
+      this.formData.delete('Image')
+      this.saveFile = null
+      this.savePic = null
+    },
+    closeAlert11() {
+      this.picoversizeWarning = false
+    },
+
     formatYear(value) {
       var dt = new Date(value)
       let year = dt.getFullYear()
@@ -837,7 +924,27 @@ export default {
         // console.log(valid)
         if (valid) {
           const tempData = Object.assign({}, this.saveTemp)
-          updateSave(tempData).then(() => {
+          const formData = new FormData();
+          if (this.saveFile !== null) {
+            formData.append('GermplasmImage', this.saveFile)
+          }
+          const data = this.saveTemp
+          for (const key in data) {
+            if (key === 'type' || key === 'isLoaded' || key === 'isContradicted' || key === 'image'
+              || key ==='name' || key === 'type') {
+              continue
+            }
+            // console.log(key)
+            if (data.hasOwnProperty(key) && data[key] !== '') {
+              formData.append(key.charAt(0).toUpperCase() + key.slice(1), data[key])
+            }
+          }
+
+          axios.post('http://101.43.206.180:8083/Info/ModifySaveInfoInSql',formData,{
+            headers:{
+              'Content-Type':'multipart/form-data'
+            }
+          }).then(() => {
             const index = this.list.findIndex(v => v.saveID === this.saveTemp.saveID)
             this.saveTemp.isContradict = 0
             this.list.splice(index, 1, this.saveTemp)
@@ -946,6 +1053,50 @@ export default {
 
 
 <style scoped>
+.Post_formbox .uploadImage {
+  margin-bottom: 20px;
+}
+
+.Post_formbox .good_img {
+  position: relative;
+  width: 90%;
+  height: 360px;
+  background-color: white;
+  box-shadow: 0 10px 9px 0 rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+.Post_formbox .good_img img {
+  max-height: 90%;
+  max-width: 95%;
+  overflow: hidden;
+  /*margin: 3% auto;*/
+}
+
+.Post_formbox .good_img i {
+  display: none;
+  position: absolute;
+  float: left;
+  font-size: 50px;
+  color: white;
+}
+
+.Post_formbox .good_img:hover {
+  box-shadow: 0 10px 9px 0 rgba(0, 0, 0, 0.4);
+}
+
+.Post_formbox .good_img:hover img {
+  filter: brightness(40%);
+}
+
+.Post_formbox .good_img:hover i {
+  display: block;
+  cursor: pointer;
+}
 .buttons-row {
   display: flex;
   justify-content: center;

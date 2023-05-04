@@ -129,10 +129,10 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="原生境图片" prop="image" align="center" width="80">
+      <el-table-column label="原生境图片" prop="image" align="center" width="160">
         <template slot-scope="{row}">
           <span>
-            {{ row.image }}
+            <img width="135px" height="140px" :src="'http://101.43.206.180' + row.image">
           </span>
         </template>
       </el-table-column>
@@ -310,7 +310,10 @@
         </div>
         <div class="detail-row">
           <div class="detail-label">原生境图片:</div>
-          <div class="detail-value">{{ this.collectionInfo.image }}</div>
+          <div class="detail-value">
+            <img width="135px" height="140px" :src="'http://101.43.206.180' + this.collectionInfo.image">
+          </div>
+<!--          <img :src="'101.43.206.180:8083/infoPics' + this.collectionInfo.image">-->
         </div>
         <div class="detail-row">
           <div class="detail-label">项目归口:</div>
@@ -476,12 +479,10 @@
 
         <div class="Post_formbox ">
           <el-form-item label="原生境图片" prop="image">
-            <!--          <el-input v-model="collectionTemp.image" placeholder="请输入原生境图片"/>-->
-            <!--          todo-->
             <div class="uploadImage">
               <el-upload
                 action="#"
-                accept=".jpg"
+                accept=""
                 :limit="1"
                 :before-upload="beforeUpload"
                 :on-change="getLocalImg"
@@ -625,10 +626,45 @@
         <el-form-item label="备注" prop="resourceRemark">
           <el-input v-model="saveTemp.resourceRemark" placeholder="请输入备注"/>
         </el-form-item>
-
-        <el-form-item label="种质图片" prop="germplasmImage">
-          <el-input v-model="saveTemp.germplasmImage" placeholder="请输入种质图片"/>
-        </el-form-item>
+        <div class="Post_formbox ">
+          <el-form-item label="种质图片" prop="image">
+            <div class="uploadImage">
+              <el-upload
+                action="#"
+                accept=""
+                :limit="1"
+                :before-upload="beforeUpload1"
+                :on-change="getLocalImg1"
+                list-type="picture-card"
+                v-show="!savePic"
+              >
+                <div class="need_upload">
+                  <i slot="default" class="el-icon-plus"></i>
+                </div>
+              </el-upload>
+              <transition name="el-zoom-in-top">
+                <div v-show="savePic" class="good_img">
+                  <img :src="savePic"/>
+                  <i class="el-icon-delete-solid" @click="removePic1"></i>
+                </div>
+              </transition>
+              <transition name="el-fade-in">
+                <el-alert
+                  title="文件太大了"
+                  type="error"
+                  description="请上传2M以下的图片"
+                  show-icon
+                  v-show="picoversizeWarning"
+                  @close="closeAlert11"
+                >
+                </el-alert>
+              </transition>
+            </div>
+          </el-form-item>
+        </div>
+<!--        <el-form-item label="种质图片" prop="germplasmImage">-->
+<!--          <el-input v-model="saveTemp.germplasmImage" placeholder="请输入种质图片"/>-->
+<!--        </el-form-item>-->
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogSaveVisible = false">
@@ -849,8 +885,10 @@ export default {
   data() {
     return {
       collectFile: null,
+      saveFile:null,
       formData: new FormData(),
       collectPic: null,
+      savePic:null,
       picoversizeWarning: false,
 
       fruitTypeOptions,
@@ -867,7 +905,7 @@ export default {
       listLoading: true,
       listQuery: {
         page: 1,
-        limit: 20,
+        limit: 10,
         importance: undefined,
         title: undefined,
 
@@ -1026,6 +1064,44 @@ export default {
       this.picoversizeWarning = false
     },
 
+    beforeUpload1(file) {
+      //限制图片大小为2M以下
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (isLt2M) {
+        this.formData.append('Image', file)
+        this.saveFile = file
+        this.nopicWarning = false
+      } else {
+        this.picoversizeWarning = true
+      }
+      return false//禁止elementUI的组件自动上传
+    },
+    getLocalImg1(event) {
+      // 获取上传图片的本地url，用于上传前的本地预览
+      const isLt2M = event.size / 1024 / 1024 < 2
+      if (isLt2M) {
+        let url = ''
+        if (window.createObjectURL !== undefined) {
+          url = window.createObjectURL(event.raw)
+        } else if (window.URL !== undefined) {
+          url = window.URL.createObjectURL(event.raw)
+        } else if (window.webkitURL !== undefined) {
+          url = window.webkitURL.createObjectURL(event.raw)
+        }
+        this.savePic = url
+        this.picoversizeWarning = false
+      }
+    },
+    removePic1() {
+      // this.form.goodpic=null;
+      this.formData.delete('Image')
+      this.saveFile = null
+      this.savePic = null
+    },
+    closeAlert11() {
+      this.picoversizeWarning = false
+    },
+
     formatYear(value) {
       var dt = new Date(value)
       let year = dt.getFullYear()
@@ -1123,7 +1199,27 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         // console.log(valid)
         if (valid) {
-          createSave(this.saveTemp).then(() => {
+          const formData = new FormData();
+          if (this.saveFile !== null) {
+            formData.append('GermplasmImage', this.saveFile)
+          }
+          const data = this.saveTemp
+          for (const key in data) {
+            if (key === 'type' || key === 'isLoaded' || key === 'isContradicted' || key === 'image'
+            || key ==='name' || key === 'type') {
+              continue
+            }
+            // console.log(key)
+            if (data.hasOwnProperty(key) && data[key] !== '') {
+              formData.append(key.charAt(0).toUpperCase() + key.slice(1), data[key])
+            }
+          }
+
+          axios.post('http://101.43.206.180:8083/Info/AddSaveInfoInSql',formData,{
+            headers:{
+              'Content-Type':'multipart/form-data'
+            }
+          }).then(() => {
             const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
             this.collectionTemp.isContradict = 0
             this.collectionTemp.status = 1
@@ -1247,7 +1343,29 @@ export default {
         // console.log(valid)
         if (valid) {
           const tempData = Object.assign({}, this.collectionTemp)
-          updateCollection(tempData).then(() => {
+
+          const formData = new FormData();
+          if (this.collectFile !== null) {
+            formData.append('Image', this.collectFile)
+          }
+          const data = this.collectionTemp
+          for (const key in data) {
+            if (key === 'status' || key === 'isLoaded' || key === 'isContradicted'
+              || key === 'image' || key === 'type'
+            || key === 'isCertified' || key ==='collectHash' || key === 'name') {
+              continue
+            }
+            // console.log(key)
+            if (data.hasOwnProperty(key) && data[key] !== '') {
+              formData.append(key.charAt(0).toUpperCase() + key.slice(1), data[key])
+            }
+          }
+
+          axios.post('http://101.43.206.180:8083/Info/ModifyCollectInfoInSql',formData,{
+            headers:{
+              'Content-Type':'multipart/form-data'
+            }
+          }).then(() => {
             const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
             this.collectionTemp.isContradict = 0
             this.list.splice(index, 1, this.collectionTemp)
@@ -1259,6 +1377,18 @@ export default {
               duration: 2000
             })
           })
+          // updateCollection(tempData).then(() => {
+          //   const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
+          //   this.collectionTemp.isContradict = 0
+          //   this.list.splice(index, 1, this.collectionTemp)
+          //   this.dialogCreateVisible = false
+          //   this.$notify({
+          //     title: 'Success',
+          //     message: '更新成功',
+          //     type: 'success',
+          //     duration: 2000
+          //   })
+          // })
         }
       })
     },
