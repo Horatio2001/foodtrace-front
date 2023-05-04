@@ -44,13 +44,9 @@
       </el-table-column>
       <el-table-column label="流程状态" prop="status" class-name="status-col" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row | statusFilter" :effect="row | effectFilter">
-            <span v-if="row.status === 0">待保存</span>
-            <span v-else-if="row.status === 1">待录入</span>
-            <span v-else-if="row.status === 2">待共享</span>
-            <span v-else-if="row.status === 3 && row.isLoaded === 0">已共享</span>
-            <span v-else-if="row.status === 3 && row.isLoaded === 1 && row.isCertified === 0">尚无证书</span>
-            <span v-else-if="row.status === 3 && row.isLoaded === 1 && row.isCertified === 1">已存证</span>
+          <el-tag type="danger" effect="dark">
+            <span v-if="row.isCertified === 0">尚无证书</span>
+            <span v-else-if="row.isCertified === 1">已存证</span>
           </el-tag>
         </template>
       </el-table-column>
@@ -135,10 +131,8 @@
 
       <el-table-column label="操作状态" prop="idContradict" class-name="status-col" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.isContradict | contadictFilter" :effect="row | loadedFilter">
-            <span v-if="row.isLoaded === 1">已上链</span>
-            <span v-else-if="row.isContradict === 0">正常</span>
-            <span v-else-if="row.isContradict === 1">反驳中</span>
+          <el-tag type="success" effect="dark">
+            <span>已上链</span>
           </el-tag>
         </template>
       </el-table-column>
@@ -441,10 +435,11 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogCollectionVisible = false" type="primary">关闭</el-button>
+
       </span>
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogCertifyVisible" title="授权证书" :close-on-click-modal="true"
+    <el-dialog :visible.sync="dialogCertifyVisible" title="确权证书" :close-on-click-modal="true"
                :show-close="true"
                class="collection-dialog"
     >
@@ -458,7 +453,7 @@
           <span class="con-name">
             收集号：
           </span>
-          {{certificate.id}}
+            {{certificate.id}}
         </p>
         <p class="con">
           <span class="con-name">
@@ -466,12 +461,12 @@
           </span>
           {{certificate.name}}
         </p>
-        <p class="con">
+          <p class="con">
           <span class="con-name">
             收集单位：
           </span>
-          {{certificate.collectUnit}}
-        </p>
+            {{certificate.collectUnit}}
+          </p>
         <p class="con">
           <span class="con-name">
             主要用途：
@@ -503,18 +498,19 @@
 
 import {
   fetchInfoListByPage,
+  fetchLoadedInfoListByPage,
   fetchInfo,
   fetchInfoTotal,
   loadInfo,
   deleteInfo,
   queryCertificate,
-  generateCertificate
+  generateCertificate, fetchLoadedInfoTotal
 } from '@/api/allInfo'
 
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-
+import list from 'echarts/src/data/List'
 
 const shareUseOptions = [
   { key: 1, display_name: '科学研究' },
@@ -712,7 +708,7 @@ export default {
         0: 'light',
         1: 'dark'
       }
-      return statusMap[row.isLoaded]
+      return statusMap[row.isCertified]
     },
 
     loadedFilter(row) {
@@ -740,6 +736,7 @@ export default {
   },
   data() {
     return {
+      dialogCertifyVisible: false,
       htmlTitle: '授权证书',
       downType: true,
       fruitTypeOptions,
@@ -786,7 +783,6 @@ export default {
       enterInfo: {},
       shareInfo: {},
       dialogSaveVisible: false,
-      dialogCertifyVisible: false,
       certificate: {},
       downloadLoading: false
     }
@@ -814,13 +810,13 @@ export default {
 
     getList() {
       this.listLoading = true
-      fetchInfoListByPage(this.listQuery.page, this.listQuery.limit).then(response => {
+      fetchLoadedInfoListByPage(this.listQuery.page, this.listQuery.limit).then(response => {
         this.list = response.data
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
       })
-      fetchInfoTotal().then(response => {
+      fetchLoadedInfoTotal().then(response => {
         this.total = response.data
         setTimeout(() => {
           this.listLoading = false
@@ -891,14 +887,13 @@ export default {
           this.list.splice(index, 1, this.collectionTemp)
         })
     },
-
     handleQueryCertificate(data) {
       queryCertificate(data.collectID).then(response => {
         this.certificate = response.data
+        console.log(this.certificate)
       })
       this.dialogCertifyVisible = true
     },
-
 
     viewDetails(id) {
       this.handleFetchCollection(id)
@@ -979,6 +974,7 @@ export default {
 
 
 <style scoped>
+
 .buttons-row {
   display: flex;
   justify-content: center;
@@ -1057,6 +1053,7 @@ export default {
   text-align: center;
 }
 </style>
+
 <style>
 ::v-deep .el-dialog__body {
   padding: 0px;

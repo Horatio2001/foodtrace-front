@@ -7,6 +7,20 @@ export function fetchInfoListByPage(data, pageIdx) {
   })
 }
 
+export function fetchLoadedInfoListByPage(data, pageIdx) {
+  return request({
+    url: '/Info/QueryDocumentedInfoByPage/'+data+'/'+pageIdx,
+    method: 'get',
+  })
+}
+
+export function fetchLoadedInfoTotal() {
+  return request({
+    url: '/Info/loadCount',
+    method: 'get',
+  })
+}
+
 export function fetchInfoTotal() {
   return request({
     url: '/Info/collectCount',
@@ -40,6 +54,8 @@ export function loadInfo(data) {
     }
   })
 }
+
+
 
 export function queryCertificate(data) {
   return request({

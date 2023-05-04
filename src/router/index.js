@@ -148,6 +148,30 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/LoadedInfo',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'LoadedInfo',
+        component: () => import('@/views/loadedInfo/index'),
+        meta: { title: '存证数据', icon: 'skill' , affix:true}
+      }
+    ]
+  },
+  {
+    path: '/Tracing',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Tracing',
+        component: () => import('@/views/tracing/index'),
+        meta: { title: '区块链溯源', icon: 'tab' , affix:true}
+      }
+    ]
+  },
+  {
     path: 'external-link',
     component: Layout,
     children: [
