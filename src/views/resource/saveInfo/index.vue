@@ -151,22 +151,22 @@
             <el-button type="primary" size="small" @click="viewDetails(row.saveID)">
               查看详情
             </el-button>
-            <el-button v-if="row.isLoaded === 0 && row.status === 1" type="primary" size="small"
+            <el-button v-if="row.isLoaded === 0 && row.status === 1 && (judgeSaver || judgeAdmin)" type="primary" size="small"
                        @click="handleUpdate(row)"
             >
               修改
             </el-button>
-            <el-button v-if="row.isLoaded === 0" type="primary" size="small" @click="handleDelete(row)">
+            <el-button v-if="row.isLoaded === 0 && (judgeSaver || judgeAdmin)" type="primary" size="small" @click="handleDelete(row)">
               删除
             </el-button>
           </div>
           <div class="buttons-row">
-            <el-button v-if="row.isLoaded === 0 && row.status === 1 && row.isContradict === 0" type="primary"
+            <el-button v-if="row.isLoaded === 0 && row.status === 1 && row.isContradict === 0 && judgeAdmin" type="primary"
                        size="small" @click="handleRefuse(row)"
             >
               反驳
             </el-button>
-            <el-button v-if="row.isLoaded === 0 && row.status === 1 && row.isContradict === 0" type="primary"
+            <el-button v-if="row.isLoaded === 0 && row.status === 1 && row.isContradict === 0 && (judgeSaver || judgeAdmin)" type="primary"
                        size="small" @click="handleCreateEnterInfo(row)"
             >
               录入
@@ -592,6 +592,12 @@ export default {
   components: { Pagination },
   directives: { waves },
   computed: {
+    judgeAdmin() {
+      return this.$store.state.user.identity === 'admin'
+    },
+    judgeSaver() {
+      return this.$store.state.user.identity === 'saver'
+    },
     fruitTypeCompute() {
       return fruitTypeKeyValue[this.saveTemp.type]
     },
@@ -762,6 +768,7 @@ export default {
 
   created() {
     this.getList()
+    this.$store.dispatch('user/getInfo')
   },
   methods: {
     beforeUpload1(file) {

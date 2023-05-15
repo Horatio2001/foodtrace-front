@@ -32,7 +32,7 @@
       border
       fit
       highlight-current-row
-      style="width: 90%;"
+      style="width: 100%;"
       @sort-change="sortChange"
     >
       <el-table-column label="收集号" prop="shareID" sortable="custom" align="center" width="102"
@@ -125,17 +125,17 @@
             <el-button type="primary" size="small" @click="viewDetails(row.shareID)">
               查看详情
             </el-button>
-            <el-button v-if="row.isLoaded === 0 && row.status === 3" type="primary" size="small"
+            <el-button v-if="row.isLoaded === 0 && row.status === 3 && (judgeSharer || judgeAdmin)" type="primary" size="small"
                        @click="handleUpdate(row)"
             >
               修改
             </el-button>
-            <el-button v-if="row.isLoaded === 0" type="primary" size="small" @click="handleDelete(row)">
+            <el-button v-if="row.isLoaded === 0 && (judgeSharer || judgeAdmin)" type="primary" size="small" @click="handleDelete(row)">
               删除
             </el-button>
           </div>
           <div class="buttons-row">
-            <el-button v-if="row.isLoaded === 0 && row.status === 3 && row.isContradict === 0" type="primary"
+            <el-button v-if="row.isLoaded === 0 && row.status === 3 && row.isContradict === 0 && judgeAdmin" type="primary"
                        size="small" @click="handleRefuse(row)"
             >
               反驳
@@ -501,6 +501,12 @@ export default {
   components: { Pagination },
   directives: { waves },
   computed: {
+    judgeAdmin() {
+      return this.$store.state.user.identity === 'admin'
+    },
+    judgeSharer() {
+      return this.$store.state.user.identity === 'sharer'
+    },
     fruitTypeCompute() {
       return fruitTypeKeyValue[this.enterTemp.type]
     },
@@ -675,6 +681,7 @@ export default {
 
   created() {
     this.getList()
+    this.$store.dispatch('user/getInfo')
   },
   methods: {
     formatYear(value) {

@@ -343,6 +343,7 @@
       </div>
 
       <span slot="footer" class="dialog-footer">
+        <el-button @click="handleDownload()" type="primary">下载历史记录</el-button>
         <el-button @click="dialogCollectionVisible = false" type="primary">关闭</el-button>
       </span>
     </el-dialog>
@@ -368,7 +369,7 @@ import MdInput from '@/components/MDinput'
 import Mallki from '@/components/TextHoverEffect/Mallki'
 import waves from '@/directive/waves/index.js' // 水波纹指令
 
-import { fetchBlockByHash, fetchCertificateByHash, fetchTxByID, getCertifiedInfoById } from '@/api/tracing'
+import { getHistory, fetchBlockByHash, fetchCertificateByHash, fetchTxByID, getCertifiedInfoById } from '@/api/tracing'
 
 const shareUseOptions = [
   { key: 1, display_name: '科学研究' },
@@ -573,7 +574,7 @@ export default {
       shareInfo: {},
       txInfo: {},
       blockInfo: {},
-
+      downloadData: null,
       fruitTypeOptions,
       resourceTypeOptions,
       collectMethodOptions,
@@ -586,7 +587,7 @@ export default {
       shareUseOptions,
 
       dialogCollectionVisible: false,
-      dialogWaitingVisible:false,
+      dialogWaitingVisible: false,
       demo: {
         txHash: ''
       },
@@ -594,7 +595,9 @@ export default {
         txHash: [{ required: true, message: '尚未输入确权编号', trigger: 'change' }]
       },
       certificate: '',
-      isCertified: false
+      isCertified: false,
+      datas: [],
+      fields: []
     }
   },
   methods: {
@@ -647,6 +650,34 @@ export default {
           this.dialogCollectionVisible = true
         }
       })
+    },
+    handleDownload() {
+      let data = this.collectInfo.collect_id
+      getHistory(data).then(response => {
+        this.downloadData = response.data
+        let arr = { 'history': this.downloadData }
+        let str = JSON.stringify(arr, null, 2)
+        let uri = 'data:text/csv;charset=utf-8, \ufeff' + encodeURIComponent(str)
+        let link = document.createElement('a')
+        link.href = uri
+        link.download = data + '_history.json'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
+    },
+    saveJSON(jsonData, asFilename) {
+      const filename = asFilename || `${(new Date()).toISOString()}.json`
+      const data = typeof jsonData === 'object' ? JSON.stringify(jsonData, undefined, 2) : jsonData
+      const blob = new Blob([data], { type: 'text/json' })
+      const link = document.createElement('a')
+      link.setAttribute('style', 'display: none')
+      link.download = filename
+      link.href = window.URL.createObjectURL(blob)
+      link.dataset.downloadurl = ['text/json', link.download, link.href].join(':')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     },
 
     handleFetchTxInfo(TxHash) {

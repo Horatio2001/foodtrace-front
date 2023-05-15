@@ -18,7 +18,7 @@
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
+      <el-button v-if="judgeCollecter || judgeAdmin" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
                  @click="handleCreateCollectionInfo"
       >
         新增
@@ -169,22 +169,22 @@
             <el-button type="primary" size="small" @click="viewDetails(row.collectID)">
               查看详情
             </el-button>
-            <el-button v-if="row.isLoaded === 0 && row.status === 0" type="primary" size="small"
+            <el-button v-if="row.isLoaded === 0 && row.status === 0 && (judgeCollecter || judgeAdmin)" type="primary" size="small"
                        @click="handleUpdate(row)"
             >
               修改
             </el-button>
-            <el-button v-if="row.isLoaded === 0" type="primary" size="small" @click="handleDelete(row)">
+            <el-button v-if="row.isLoaded === 0 && (judgeCollecter || judgeAdmin)" type="primary" size="small" @click="handleDelete(row)">
               删除
             </el-button>
           </div>
           <div class="buttons-row">
-            <el-button v-if="row.isLoaded === 0 && row.status === 0 && row.isContradict === 0" type="primary"
+            <el-button v-if="row.isLoaded === 0 && row.status === 0 && row.isContradict === 0 && judgeAdmin" type="primary"
                        size="small" @click="handleRefuse(row.collectID)"
             >
               反驳
             </el-button>
-            <el-button v-if="row.isLoaded === 0 && row.status === 0 && row.isContradict === 0" type="primary"
+            <el-button v-if="row.isLoaded === 0 && row.status === 0 && row.isContradict === 0 && (judgeCollecter || judgeAdmin)" type="primary"
                        size="small" @click="handleCreateSaveInfo(row)"
             >
               保存
@@ -816,6 +816,12 @@ export default {
   components: { Pagination },
   directives: { waves },
   computed: {
+    judgeAdmin() {
+      return this.$store.state.user.identity === 'admin'
+    },
+    judgeCollecter() {
+      return this.$store.state.user.identity === 'collecter'
+    },
     fruitTypeCompute() {
       return fruitTypeKeyValue[this.collectionTemp.type]
     },
@@ -1016,6 +1022,7 @@ export default {
 
   created() {
     this.getList()
+    this.$store.dispatch('user/getInfo')
   },
   methods: {
     beforeUpload(file) {

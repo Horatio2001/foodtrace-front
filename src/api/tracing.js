@@ -30,3 +30,13 @@ export function getCertifiedInfoById(data) {
     }
   })
 }
+
+export function getHistory(data) {
+  return request({
+    url: '/ReadFruitInfoHistory' ,
+    method: 'get',
+    params:{
+      fruitInfoID : data
+    }
+  })
+}

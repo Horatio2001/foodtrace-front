@@ -149,17 +149,17 @@
             <el-button type="primary" size="small" @click="viewDetails(row.collectID)">
               查看详情
             </el-button>
-            <el-button v-if="row.isLoaded === 0" type="primary" size="small" @click="handleDelete(row)">
+            <el-button v-if="row.isLoaded === 0 && judgeAdmin" type="primary" size="small" @click="handleDelete(row)">
               删除
             </el-button>
           </div>
           <div class="buttons-row">
-            <el-button v-if="row.isLoaded === 0 && row.status === 3 && row.isContradict === 0" type="primary"
+            <el-button v-if="row.isLoaded === 0 && row.status === 3 && row.isContradict === 0 && judgeAdmin" type="primary"
                        size="small" @click="handleLoad(row)"
             >
               存证
             </el-button>
-            <el-button v-if="row.isLoaded === 1 && row.isCertified === 0" type="primary"
+            <el-button v-if="row.isLoaded === 1 && row.isCertified === 0 && judgeAdmin" type="primary"
                        size="small" @click="handleGenerateCertificate(row)"
             >
               生成证书
@@ -518,7 +518,9 @@ import {
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-
+import { mapGetters, mapState } from 'vuex'
+import store from '@/store'
+import { getToken } from '@/utils/auth'
 
 const shareUseOptions = [
   { key: 1, display_name: '科学研究' },
@@ -668,12 +670,20 @@ export default {
   components: { Pagination },
   directives: { waves },
   computed: {
+    judgeAdmin() {
+      return this.$store.state.user.identity === 'admin'
+    },
     fruitTypeCompute() {
       return fruitTypeKeyValue[this.collectionTemp.type]
     },
     saveTypeCompute() {
       return fruitTypeKeyValue[this.saveTemp.type]
-    }
+    },
+    ...mapGetters([
+      'name',
+      'identity',
+      'token'
+    ]),
   },
   filters: {
     fruitTypeFilter(type) {
@@ -798,6 +808,7 @@ export default {
 
   created() {
     this.getList()
+    this.$store.dispatch('user/getInfo')
   },
   methods: {
     formatYear(value) {
@@ -905,6 +916,7 @@ export default {
 
 
     viewDetails(id) {
+      // console.log(this.$store.state.user.identity)
       this.handleFetchCollection(id)
     },
 
