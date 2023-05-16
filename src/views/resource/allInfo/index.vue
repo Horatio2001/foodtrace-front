@@ -515,6 +515,8 @@ import {
   generateCertificate
 } from '@/api/allInfo'
 
+import { generateQRCode } from '@/api/QRCode'
+
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
@@ -893,11 +895,13 @@ export default {
       })
         .then(async() => {
           generateCertificate(row.collectID).then(() => {
-            this.$notify({
-              title: 'Success',
-              message: '您已成功生成授权证书，请稍后点击查看',
-              type: 'success',
-              duration: 2000
+            generateQRCode(row.blockHash).then(() => {
+              this.$notify({
+                title: 'Success',
+                message: '您已成功生成授权证书，请稍后点击查看',
+                type: 'success',
+                duration: 2000
+              })
             })
           })
           const index = this.list.findIndex(v => v.collectID === row.collectID)

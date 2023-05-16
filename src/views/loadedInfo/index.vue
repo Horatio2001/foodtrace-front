@@ -153,15 +153,15 @@
             >
               存证
             </el-button>
-            <el-button v-if="row.isLoaded === 1 && row.isCertified === 0" type="primary"
-                       size="small" @click="handleGenerateCertificate(row)"
-            >
-              生成证书
-            </el-button>
             <el-button v-if="row.isLoaded === 1 && row.isCertified === 1" type="primary"
                        size="small" @click="handleQueryCertificate(row)"
             >
               查看证书
+            </el-button>
+            <el-button v-if="row.isLoaded === 1 && row.isCertified === 1" type="primary"
+                       size="small" @click="handleQRCode(row)"
+            >
+              查看二维码
             </el-button>
           </div>
         </template>
@@ -172,6 +172,22 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit"
                 @pagination="getList"
     />
+
+    <el-dialog :visible.sync="QRdialog" title="二维码" :close-on-click-modal="true"
+               :show-close="true"
+               class="collection-dialog"
+    >
+      <div class="detail-row">
+        <div class="detail-value">
+          <img width="auto" height="auto" :src="'http://101.43.206.180/QRCode/' + this.blockHash + '.jpg'">
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="QRdialog = false" type="primary">关闭</el-button>
+
+      </span>
+    </el-dialog>
+
 
     <el-dialog :visible.sync="dialogCollectionVisible" title="信息详情" :close-on-click-modal="true"
                :show-close="true"
@@ -453,31 +469,31 @@
           <span class="con-name">
             收集号：
           </span>
-            {{certificate.id}}
+          {{ certificate.id }}
         </p>
         <p class="con">
           <span class="con-name">
             名称：
           </span>
-          {{certificate.name}}
+          {{ certificate.name }}
         </p>
-          <p class="con">
+        <p class="con">
           <span class="con-name">
             收集单位：
           </span>
-            {{certificate.collectUnit}}
-          </p>
+          {{ certificate.collectUnit }}
+        </p>
         <p class="con">
           <span class="con-name">
             主要用途：
           </span>
-          {{certificate.mainUse}}
+          {{ certificate.mainUse }}
         </p>
         <p class="con">
           <span class="con-name">
             资源备注：
           </span>
-          {{certificate.resourceRemark}}
+          {{ certificate.resourceRemark }}
         </p>
         <div class="con-unit">
           <p>区块链种质溯源系统</p>
@@ -736,6 +752,8 @@ export default {
   },
   data() {
     return {
+      blockHash: '',
+      QRdialog: false,
       dialogCertifyVisible: false,
       htmlTitle: '授权证书',
       downType: true,
@@ -894,7 +912,10 @@ export default {
       })
       this.dialogCertifyVisible = true
     },
-
+    handleQRCode(data) {
+      this.blockHash = data.blockHash
+      this.QRdialog = true
+    },
     viewDetails(id) {
       this.handleFetchCollection(id)
     },
@@ -1060,12 +1081,14 @@ export default {
   display: flex;
   justify-content: center;
 }
+
 #pdfDom {
   /* 要想pdf周边留白，要在这里设置 */
   padding: 20px;
   width: 750px;
 
 }
+
 .proBox {
   background: #e3905e no-repeat;
   background-size: cover;
@@ -1078,6 +1101,7 @@ export default {
   color: #000;
   font-family: SimSun;
 }
+
 .tit {
   color: #cf0c0c;
   font-size: 36px;
@@ -1089,12 +1113,14 @@ export default {
   font-family: STHeiti;
   margin: 20px 0;
 }
+
 .proid {
   text-align: right;
   margin: 0;
   font-weight: 500;
   /* margin-right: 5px; */
 }
+
 .con {
   font-size: 20px;
   font-weight: 700;
@@ -1103,10 +1129,12 @@ export default {
   line-height: 32px;
   text-indent: 2em;
 }
+
 .con-name {
   font-family: 华文行楷, STXingkai;
   /*border-bottom: 2px solid #000;*/
 }
+
 .con-unit {
   font-size: 18px;
   font-weight: 700;
@@ -1116,9 +1144,11 @@ export default {
   text-align: center;
   letter-spacing: 3px;
 }
+
 .con-unit p {
   margin: 5px 0;
 }
+
 .con-footer {
   font-size: 18px;
   font-weight: 700;
@@ -1128,6 +1158,7 @@ export default {
   right: 0;
   text-align: center;
 }
+
 .chapter {
   border-radius: 50%;
   position: absolute;

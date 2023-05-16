@@ -181,6 +181,18 @@ export const constantRoutes = [
       }
     ]
   },
+  {
+    path: '/AppTracing',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'AppTracing',
+        component: () => import('@/views/appTracing/index'),
+        meta: { title: '移动端溯源', icon: 'tab' , affix:true}
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
