@@ -1321,7 +1321,7 @@ export default {
             this.collectionTemp.isContradict = 0
             this.collectionTemp.status = 1
             this.list.splice(index, 1, this.collectionTemp)
-            this.dialogCollectionVisible = false
+            this.dialogCreateVisible = false
             this.$notify({
               title: 'Success',
               message: 'Created Successfully',

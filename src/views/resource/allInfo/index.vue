@@ -872,10 +872,11 @@ export default {
         type: 'warning'
       })
         .then(async() => {
-          loadInfo(row.collectID).then(() => {
+          loadInfo(row.collectID).then(response => {
             const temp = Object.assign({}, row)
             const index = this.list.findIndex(v => v.collectID === row.collectID)
             temp.isLoaded = 1
+            temp.blockHash = response.hash
             this.list.splice(index, 1, temp)
             this.$notify({
               title: 'Success',

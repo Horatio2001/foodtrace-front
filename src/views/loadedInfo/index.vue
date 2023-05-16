@@ -918,6 +918,7 @@ export default {
     },
     handleQRCode(data) {
       this.blockHash = data.blockHash
+      console.log(data.blockHash)
       this.QRdialog = true
     },
     viewDetails(id) {
