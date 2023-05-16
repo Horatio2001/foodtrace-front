@@ -568,7 +568,7 @@ export default {
       shareUseOptions,
 
       dialogCollectionVisible: false,
-      dialogWaitingVisible: false,
+      dialogWaitingVisible: true,
       demo: {
         txHash: ''
       },
