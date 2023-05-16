@@ -301,7 +301,9 @@
         </div>
         <div class="detail-row">
           <div class="detail-label">原生境图片:</div>
-          <div class="detail-value">{{ this.collectInfo.image }}</div>
+          <div class="detail-value">
+            <img width="135px" height="140px" :src="'http://101.43.206.180' + this.collectInfo.image">
+          </div>
         </div>
         <div class="detail-row">
           <div class="detail-label">项目归口:</div>
@@ -363,7 +365,9 @@
         </div>
         <div class="detail-row">
           <div class="detail-label">种质图片:</div>
-          <div class="detail-value">{{ this.saveInfo.germplasmImage }}</div>
+          <div class="detail-value">
+            <img width="135px" height="140px" :src="'http://101.43.206.180' + this.saveInfo.germplasmImage">
+          </div>
         </div>
         <div class="detail-row">
           <div class="detail-label">资源描述:</div>

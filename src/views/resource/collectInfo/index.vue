@@ -519,7 +519,7 @@
           <el-input v-model="collectionTemp.speciesName" placeholder="请输入项目归口"/>
         </el-form-item>
         <el-form-item label="操作员" prop="operator">
-          <span>admin</span>
+          <span>{{ this.$store.state.user.name }}</span>
         </el-form-item>
         <el-form-item label="备注" prop="collectRemark">
           <el-input v-model="collectionTemp.collectRemark" placeholder="请输入备注"/>
@@ -1321,7 +1321,7 @@ export default {
             this.collectionTemp.isContradict = 0
             this.collectionTemp.status = 1
             this.list.splice(index, 1, this.collectionTemp)
-            this.dialogSaveVisible = false
+            this.dialogCollectionVisible = false
             this.$notify({
               title: 'Success',
               message: 'Created Successfully',
