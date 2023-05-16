@@ -189,6 +189,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'AppTracing',
         component: () => import('@/views/appTracing/index'),
+        hidden: true,
         meta: { title: '移动端溯源', icon: 'tab' , affix:true}
       }
     ]

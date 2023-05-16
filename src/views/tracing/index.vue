@@ -213,6 +213,12 @@
           <div class="detail-value">{{ this.collectInfo.collect_unit }}</div>
         </div>
         <div class="detail-row">
+          <div class="detail-label">原生境图片:</div>
+          <div class="detail-value">
+            <img width="135px" height="140px" :src=" this.collectInfo.image===''?'http://101.43.206.180/defaultImage.png' : this.collectInfo.image.charAt[0]==='/'? ('http://101.43.206.180' + this.collectInfo.image) : ('http://101.43.206.180/' + this.collectInfo.image)">
+          </div>
+        </div>
+        <div class="detail-row">
           <div class="detail-label">收集时间:</div>
           <div class="detail-value">{{ formatDate(this.collectInfo.collect_time) }}</div>
         </div>
@@ -273,6 +279,12 @@
         <div class="detail-row">
           <div class="detail-label">保存性质:</div>
           <div class="detail-value">{{ this.saveInfo.save_property }}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label">种质图片:</div>
+          <div class="detail-value">
+            <img width="135px" height="140px" :src="(this.saveInfo.germplasm_image === '')?'http://101.43.206.180/defaultImage.png' : this.saveInfo.germplasm_image.charAt[0] === '/'? ('http://101.43.206.180' + this.saveInfo.germplasm_image) : ('http://101.43.206.180/' + this.saveInfo.germplasm_image)">
+          </div>
         </div>
         <div class="detail-row">
           <div class="detail-label">资源描述:</div>
@@ -639,7 +651,14 @@ export default {
             getCertifiedInfoById(this.certificate.id).then(response => {
               this.info = response.data
               this.collectInfo = response.data.collect_info
+              // console.log('--->' + this.collectInfo.Image)
+              // if (this.collectInfo.Image === '') {
+              //   this.collectInfo.Image = '/defaultImage.png'
+              // }
               this.saveInfo = response.data.save_info
+              // if (this.saveInfo.germplasmImage === '') {
+              //   this.saveInfo.germplasmImage = '/defaultImage.png'
+              // }
               this.enterInfo = response.data.enter_info
               this.shareInfo = response.data.share_info
               this.dialogCollectionVisible = true
