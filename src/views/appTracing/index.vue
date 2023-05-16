@@ -194,7 +194,7 @@
             <div class="detail-row">
               <div class="detail-label">原生境图片:</div>
               <div class="detail-value">
-                <img width="135px" height="140px" :src=" this.collectInfo.image===''?'http://101.43.206.180/defaultImage.png' : this.collectInfo.image.charAt[0]==='/'? ('http://101.43.206.180' + this.collectInfo.image) : ('http://101.43.206.180/' + this.collectInfo.image)">
+                <img width="135px" height="140px" :src=" 'http://101.43.206.180' + this.collectInfo.image">
               </div>
             </div>
             <div class="detail-row">
@@ -260,7 +260,7 @@
             <div class="detail-row">
               <div class="detail-label">种质图片:</div>
               <div class="detail-value">
-                <img width="135px" height="140px" :src="(this.saveInfo.germplasm_image === '')?'http://101.43.206.180/defaultImage.png' : this.saveInfo.germplasm_image.charAt[0] === '/'? ('http://101.43.206.180' + this.saveInfo.germplasm_image) : ('http://101.43.206.180/' + this.saveInfo.germplasm_image)">
+                <img width="135px" height="140px" :src="'http://101.43.206.180' + this.saveInfo.germplasm_image">
               </div>
             </div>
             <div class="detail-row">
