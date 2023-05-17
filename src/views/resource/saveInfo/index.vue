@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.collectID" placeholder="收集号" style="width: 200px;" class="filter-item"
-                @keyup.enter.native="handleFilter"
+                @keyup.enter.native="handleSearchFilter"
       />
       <el-select v-model="listQuery.status" placeholder="流程状态" clearable style="width: 130px" class="filter-item">
         <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item"/>
@@ -15,7 +15,7 @@
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleSearchFilter">
         搜索
       </el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download"
@@ -463,13 +463,14 @@ import {
   fetchSaveListByPage,
   fetchSaveTotal,
   updateSave,
-  createEnter
+  createEnter, fetchBlurSaveListByPage
 } from '@/api/saveInfo'
 
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import axios from 'axios'
+import { fetchBlurCollectionListByPage } from '@/api/collectInfo'
 
 const fruitTypeOptions = [
   { key: 1, display_name: '产胶作物' },
@@ -847,6 +848,21 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
+
+    handleSearchFilter() {
+      this.listQuery.page = 1
+      this.getBlurList()
+    },
+    getBlurList() {
+      this.listLoading = true
+      fetchBlurSaveListByPage(this.listQuery.collectID).then(response => {
+        this.list = response.data
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
+
 
     sortChange(data) {
       const { prop, order } = data

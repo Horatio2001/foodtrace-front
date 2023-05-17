@@ -7,6 +7,16 @@ export function fetchCollectionListByPage(data, pageIdx) {
   })
 }
 
+export function fetchBlurCollectionListByPage(BlurID) {
+  return request({
+    url: '/BlurInfo/queryCollectInfoByBlurID',
+    method: 'get',
+    params:{
+      BlurID: BlurID
+    }
+  })
+}
+
 export function fetchCollectionTotal() {
   return request({
     url: '/Info/collectCount',

@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <el-input v-model="listQuery.collectID" placeholder="收集号" style="width: 200px;" class="filter-item"
-                @keyup.enter.native="handleFilter"
+                @keyup.enter.native="handleSearchFilter"
       />
       <el-select v-model="listQuery.status" placeholder="流程状态" clearable style="width: 130px" class="filter-item">
         <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item"/>
@@ -15,7 +15,7 @@
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleSearchFilter">
         搜索
       </el-button>
       <el-button v-if="judgeCollecter || judgeAdmin" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit"
@@ -687,7 +687,7 @@ import {
   fetchCollection,
   fetchCollectionListByPage,
   fetchCollectionTotal,
-  updateCollection, createSave
+  updateCollection, createSave, fetchBlurCollectionListByPage
 } from '@/api/collectInfo'
 
 import waves from '@/directive/waves' // waves directive
@@ -1147,6 +1147,19 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
+    handleSearchFilter() {
+      this.listQuery.page = 1
+      this.getBlurList()
+    },
+    getBlurList() {
+      this.listLoading = true
+      fetchBlurCollectionListByPage(this.listQuery.collectID).then(response => {
+        this.list = response.data
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1.5 * 1000)
+      })
+    },
 
     sortChange(data) {
       const { prop, order } = data
@@ -1317,10 +1330,12 @@ export default {
               'Content-Type':'multipart/form-data'
             }
           }).then(() => {
-            const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
+            // const index = this.list.findIndex(v => v.collectID === this.collectionTemp.collectID)
             this.collectionTemp.isContradict = 0
-            this.collectionTemp.status = 1
-            this.list.splice(index, 1, this.collectionTemp)
+            this.collectionTemp.status = 0
+            this.collectionTemp.image = '/defaultImage.png'
+            // this.list.splice(index, 1, this.collectionTemp)
+            this.list.unshift(this.collectionTemp)
             this.dialogCreateVisible = false
             this.$notify({
               title: 'Success',

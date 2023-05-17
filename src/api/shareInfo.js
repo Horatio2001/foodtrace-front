@@ -7,6 +7,16 @@ export function fetchShareListByPage(data, pageIdx) {
   })
 }
 
+export function fetchBlurShareListByPage(BlurID) {
+  return request({
+    url: '/BlurInfo/queryShareInfoByBlurID',
+    method: 'get',
+    params:{
+      BlurID: BlurID
+    }
+  })
+}
+
 export function fetchShareTotal() {
   return request({
     url: '/Info/shareCount',

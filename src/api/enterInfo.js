@@ -7,6 +7,16 @@ export function fetchEnterListByPage(data, pageIdx) {
   })
 }
 
+export function fetchBlurEnterListByPage(BlurID) {
+  return request({
+    url: '/BlurInfo/queryEnterInfoByBlurID',
+    method: 'get',
+    params:{
+      BlurID: BlurID
+    }
+  })
+}
+
 export function fetchEnterTotal() {
   return request({
     url: '/Info/enterCount',

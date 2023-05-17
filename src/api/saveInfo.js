@@ -7,6 +7,17 @@ export function fetchSaveListByPage(data, pageIdx) {
   })
 }
 
+
+export function fetchBlurSaveListByPage(BlurID) {
+  return request({
+    url: '/BlurInfo/querySaveInfoByBlurID',
+    method: 'get',
+    params:{
+      BlurID: BlurID
+    }
+  })
+}
+
 export function fetchSaveTotal() {
   return request({
     url: '/Info/saveCount',
